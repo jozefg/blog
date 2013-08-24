@@ -18,7 +18,7 @@ This isn't shocking I suppose. Go was definitely made by engineers to solve
 a very real world problem. I haven't used Go for a project with 10 or 20 people
 but I suspect it would scale wonderfully.
 
-On the squishier side, Go's community is reasonably friendly. No newbie's got
+On the squishier side, Go's community is reasonably friendly. No newbies got
 their heads bitten off as far as I could see.
 
 ## Go, The Not So Good
@@ -168,12 +168,12 @@ in 2013.
 Consider the keyword `range`. It's a deeply magical keyword that only works
 inside `for` loops on Go's primitive data structures.
 
-I like writing compilers so I end up dealing a lot with trees, want to have
-`range` traverse your AST for you? Tough!
+I like writing compilers so I end up dealing a lot with trees. I often want to have
+`range` traverse my AST? Tough, ain't gonna happen!
 
 This is just one example of many
 
-  - Only Go's primitive types my parameterize over other types
+  - Only Go's primitive types may by parameterized over other types
   - Only magical primitive functions may return 1 or 2 arguments depending on context
   - Only magical primitives have real parametric polymorphism
   - Only Go's primitives may have infix operators
@@ -198,7 +198,7 @@ In Lisp, CLOS (Common Lisp Object System) was originally a library. It was
 a user defined abstraction that was so popular it was ported into the standard.
 
 Go is just the opposite. Any user defined abstractions are painfully,
-intruisively obvious. Go developers seems to consider this a "Good Thing".
+obnoxiously obvious. Go developers seems to consider this a "Good Thing".
 On one hand it does aid code readability. On the other, it really limits
 what Go's pleasant to use for.
 
@@ -225,6 +225,9 @@ Which would you rather write?
 I can't help but feel like Go was designed with only problems the designers were facing in mind.
 This is great for them, but calling Go a general purpose language should
 mean that it's nice to use for other sorts of problems too.
+
+The argument of "it makes the code hard to read" seems a bit odd to me. Bad devs write bad code,
+but that doesn't mean you should make it hard for good ones to write clean, concise code.
 
 ## Conclusion
 

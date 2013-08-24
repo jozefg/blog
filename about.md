@@ -5,7 +5,9 @@ title: About
 <img src="/images/ring_balance.jpg"
   style="width: 25%; height: 25%; float: right;"/>
 
-I am a high school student in the US.
+Hello,
+
+My name is Danny Gratzer, I am a high school student in the US.
 
 ## Programming
 I like functional programming. Specifically, I write lots of compilers
