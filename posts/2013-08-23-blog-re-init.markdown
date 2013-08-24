@@ -1,5 +1,6 @@
 ------------------
 title: Blog Re-Init
+date: 2013-8-23
 ------------------
 
 After a lot of hair-pulling and teeth grinding. I've decided to move
