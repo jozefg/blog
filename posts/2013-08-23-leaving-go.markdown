@@ -139,7 +139,7 @@ there's some error in the function that leads to a casting failure.
 
 Doing this safely in Go looks like this,
 
-    newX, err := abs(x).int(32)
+    newX, err := abs(x).(int32)
     if err != nil {
         fmt.Println("Darn it!")
         // Handle errors
@@ -220,7 +220,7 @@ Or in Haskell
 
     b*b - 4 * a * c
 
-Which would you rather write?
+Which would you rather write? More importantly, which would you rather read?
 
 I can't help but feel like Go was designed with only problems the designers were facing in mind.
 This is great for them, but calling Go a general purpose language should
@@ -234,4 +234,4 @@ but that doesn't mean you should make it hard for good ones to write clean, conc
 I'm really sad to have written this actually. I wanted to like Go a lot. I wanted a fast, compiled
 replacement for stuff I write in C right now. But Go is not that language. Shame.
 
-Thank you to the Go team for all the hardwork on the project and best of luck.
+Thank you to the Go team for all the hard work on the project and best of luck.
