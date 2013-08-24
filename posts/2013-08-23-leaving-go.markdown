@@ -2,7 +2,7 @@
 title: Leaving Go
 tags: Go
 -----------------
-I've been using Go since Novemember and I've decided that it's time to give it
+I've been using Go since November and I've decided that it's time to give it
 up for my hobby projects. I'd still be happy to use it professionally, but
 I find that programming in Go isn't "fun" in the same way that Python, Haskell,
 or Lisp is.
@@ -16,7 +16,7 @@ many a community has failed to address but Go seems to have handled it nicely.
 
 This isn't shocking I suppose. Go was definitely made by engineers to solve
 a very real world problem. I haven't used Go for a project with 10 or 20 people
-but I suspect it would scale marvelously.
+but I suspect it would scale wonderfully.
 
 On the squishier side, Go's community is reasonably friendly. No newbie's got
 their heads bitten off as far as I could see.
@@ -166,7 +166,7 @@ in 2013.
 
 ### Extensibility
 Consider the keyword `range`. It's a deeply magical keyword that only works
-inside `for` loops on Go's primitive datastructures.
+inside `for` loops on Go's primitive data structures.
 
 I like writing compilers so I end up dealing a lot with trees, want to have
 `range` traverse your AST for you? Tough!
