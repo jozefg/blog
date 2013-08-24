@@ -11,12 +11,17 @@ platform, but I missed a few things,
   * Nice, painless editing
   * Easy customization
 
-Using Bitbucket, it's trivial to use mercurial on my blog. It also means that
-I can (and am!) typing this post in Emacs. Personally I like markdown
-so I can use Markdown and Flyspell modes for writing blog posts! Finally,
-I really don't enjoy the process of trying to customize Blogger. For example
+Using Bitbucket, it's trivial to use mercurial on my blog. Now I have a full
+revision history of every edit I make to my posts. No more losing my last 4
+paragraphs because my laptop died.
+
+It also means that I can (and am!) typing this post in Emacs. Personally I like
+markdown so I can use Markdown and Flyspell modes for writing blog posts!
+
+Finally, I really don't enjoy the process of trying to customize Blogger. For example
 adding syntax highlighting for Haskell was an uphill battle from the start
-and 9 months of blogging later, I'm still not happy with the results.
+and 9 months of blogging later, I'm still not happy with the results. Adding
+the equivalent in Hakyll took me 10 minutes.
 
 My only problems now are
 
