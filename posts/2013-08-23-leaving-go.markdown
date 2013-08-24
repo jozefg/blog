@@ -57,7 +57,8 @@ So now that we've just taken all our lovely, optimization friendly type
 information and thrown it away, let's manually get it back!
 
 ``` Go
-    func abs(x interface{}) interface{} {
+    type Top interface{}
+    func abs(x Top) Top {
         switch x.(type){
 	        case int32:
     		    if x.(int32) < 0 {
@@ -79,17 +80,21 @@ information and thrown it away, let's manually get it back!
 		        }
 	        case float64:
         		if x.(float64) < 0 {
-			        return -x.(float64)
+			        return -x.(float32)
 		        } else {
-                    return x.(float64)
+                            return x.(float64)
 		        }
             }
-	        return nil
+        return nil
     }
 ```
 
 Holy boilerplate batman! And using this means we are forced to stick
 a cast right in the middle of our perfectly safe code.
+
+By the way, there's an error in the above code? Did you catch it? It's
+tricky because with all this code duplication you tend to just skim over
+the boilerplate and miss the nasty runtime errors.
 
 A type system that regularly requires casts is just gross, it's a sign
 that the type system isn't expressive enough to describe a problem.
@@ -149,8 +154,11 @@ all the pain of static typing with pretty much none of the benefits.
 
 The response of the Go community is "Abs is a 2 line function, just do it
 inline or per type" to which I respond: I want to define a generic algorithm,
-or datastructure, or really anything reasonably complex! The entire Go
-math library requires casts to `float64`s to use, using a stack in Go
+or datastructure, or really anything reasonably complex!
+
+When I started Go, I thought this was just me missing a few clever tricks for
+how to properly utilize Go, I'm not so sure anymore.
+The entire Go math library requires casts to `float64`s to use, using a stack in Go
 requires casts from `interface{}`.
 
 Coming from Haskell and Coq, this is not something I should have to put up with
@@ -222,3 +230,5 @@ mean that it's nice to use for other sorts of problems too.
 
 I'm really sad to have written this actually. I wanted to like Go a lot. I wanted a fast, compiled
 replacement for stuff I write in C right now. But Go is not that language. Shame.
+
+Thank you to the Go team for all the hardwork on the project and best of luck.
