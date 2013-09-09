@@ -240,5 +240,6 @@ to fill too.
 
 Perhaps I've overlooked something, but right now I think functional programming has got
 a ways to go making it more accessible to beginners. And I think it's definitely worth the
-effort.
+effort since a lot of the marketing points of FP, easier reasoning, simplified concepts, etc
+are all excellent for beginners.
 
