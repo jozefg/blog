@@ -3,8 +3,8 @@
 import           Data.Monoid (mappend)
 import           Hakyll
 
-
 --------------------------------------------------------------------------------
+unCopyFile (CopyFile f) = f
 main :: IO ()
 main = hakyll $ do
     match "images/*" $ do
@@ -20,7 +20,6 @@ main = hakyll $ do
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
-
     match "posts/*" $ do
         route $ setExtension "html"
         compile $ pandocCompiler
