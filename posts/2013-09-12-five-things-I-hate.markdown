@@ -24,7 +24,7 @@ This has been talked to death... I don't like records, they're pretty hacky. Hap
 
 ### 4. Monomorphism
 
-I don't mind the monomorphism restriction, but I do wish that the errors it generates on GHC referenced the monorphic variable rather
+I don't mind the monomorphism restriction, but I do wish that the errors it generates on GHC referenced the monomorphic variable rather
  than saying "can't unify "Foo" with "Bar"". I'm well aware that a `Foo` isn't a `Bar`, but seeing why some type var magically became `Foo`
  would be helpful. Also, it'd be nice if when mentioned, monomorphic variables were different syntactically than
  normal onces, perhaps prefixed with ! or _.
