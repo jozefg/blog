@@ -13,7 +13,7 @@ it doesn't stop me from muttering about having to import `Data.Foldable` and hid
 
 ### 2. Modules
 
-Haskell's modules are in essence the barest minimum needed to be a module system. I which we had
+Haskell's modules are in essence the barest minimum needed to be a module system. I wish we had
  first class modules, ML-style functors, etc etc
 
 ### 3. Records
@@ -27,13 +27,13 @@ This has been talked to death... I don't like records, they're pretty hacky. Hap
 I don't mind the monomorphism restriction, but I do wish that the errors it generates on GHC referenced the monomorphic variable rather
  than saying "can't unify "Foo" with "Bar"". I'm well aware that a `Foo` isn't a `Bar`, but seeing why some type var magically became `Foo`
  would be helpful. Also, it'd be nice if when mentioned, monomorphic variables were different syntactically than
- normal onces, perhaps prefixed with ! or _.
+ normal onces, perhaps prefixed with ! or _. It'd save a lot of stackoverflow questions
 
 ### 5. `fail`
 
 I really wish that `fail` wasn't part of the `monad` specification. Everywhere else in Haskell, if you don't provide the appropriate
- case to a pattern match, you get a runtime failure, fine. But in a monad, you might just end up with `fail`. Which is *probably* a runtime
- exception, but might also be a parser failure or `Nothing` or `Left` or something else just to name a few. Ick. I'd much prefer it if
+ case to a pattern match, you get a runtime failure, fine. But in a `do` block, you just end up with `fail`. Which is *probably* a runtime
+ exception, but might also be a parser failure or `Nothing` or `Left` or something else. Ick. I'd much prefer it if
  we just had runtime failures and then used `mzero` when we want failure. That's what it's for.
  
  
