@@ -54,3 +54,18 @@ It's pretty clear that the only sane version of `arg` is `id`.
 A harder one,
 
     type ReallyTricky a b = forall f. Functor f => (a -> b) -> f a -> f b
+
+That's right it just means that anything of type `ReallyTricky` knows how to
+take some arbitrary function, and lift it into *any* functor. And the caller gets
+to choose which one.
+
+    t :: ReallyTricky
+    t = fmap
+
+That's it! Just remember that `forall` is universal quantification. This means
+that you have to be able to support all possible instationations of that variable and
+the caller will choose which one.
+
+Now suppose you want it the other way, you choose the instantiation and the caller
+has to handle it generically. Then you want `existential` quantification. A subject for
+another post.
