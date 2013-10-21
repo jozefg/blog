@@ -32,7 +32,7 @@ Now consider some arbitrary functor `F`. Suppose there exists an object `a` so t
 `F` is isomorphic to `Hom a`. What would this look like?
 
 ``` haskell
-    type family Obj (f :: * -> *) = *
+    type family Obj (f :: * -> *) :: *
     class Functor f => HomIso f where
       toHom :: f a -> Hom (Obj f) a
       toF   :: Hom (Obj f) a -> f a
