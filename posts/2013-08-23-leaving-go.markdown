@@ -38,7 +38,7 @@ problem is that Go provides no safe system for polymorphism.
 I'll give you a trivial example, define a generic absolute value function
 in Go.
 
-``` Go
+``` go
      func abs(x ???) ???{
          ???
     }
@@ -47,7 +47,7 @@ in Go.
 Now what are those `???` supposed to be? Well, we have no notion
 of parametric polymorphism so our only choice is subtyping polymorphism.
 
-``` Go
+``` go
      func abs(x interface{}) interface{} {
          ???
     }
@@ -56,7 +56,7 @@ of parametric polymorphism so our only choice is subtyping polymorphism.
 So now that we've just taken all our lovely, optimization friendly type
 information and thrown it away, let's manually get it back!
 
-``` Go
+``` go
     type Top interface{}
     func abs(x Top) Top {
         switch x.(type){
@@ -101,7 +101,7 @@ that the type system isn't expressive enough to describe a problem.
 
 What would happen if we wrote this in Haskell?
 
-```Haskell
+``` haskell
     abs :: Num a => a -> a
     abs a = if a < 0 then -a else a
 ```
@@ -111,7 +111,7 @@ it'll work for any user defined types.
 
 Now let's be fair to Go, we can try this
 
-```Go
+``` go
      type Abser interface{
          func Negate() Abser
          func LtZero() Abser
@@ -123,6 +123,7 @@ Now let's be fair to Go, we can try this
          return x
      }
 ```
+
 But this still isn't close to Haskell's version for several reasons, the
 biggest one for me is that this version takes in some `Abser` and returns
 some `Abser`. Are those the same underlying implementations? Who knows!
@@ -139,12 +140,14 @@ there's some error in the function that leads to a casting failure.
 
 Doing this safely in Go looks like this,
 
+``` go
     newX, err := abs(x).(int32)
     if err != nil {
         fmt.Println("Darn it!")
         // Handle errors
     }
     someFunc(newX)
+```
 
 Now if that doesn't grind on you I really don't know what would.
 

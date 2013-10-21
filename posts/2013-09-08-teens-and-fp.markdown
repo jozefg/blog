@@ -39,11 +39,13 @@ subtleties like indirection mutation looks less appealing.
 In the first course for computer science students at the University of Minnesota,
 there is a whole quiz filled with problems like this in Python:
 
+``` python
     # What is the output of
     a = [1, 2, 3]
     b = a[1:]
     b[1] = 4
     print a
+```
 
 Once you have a whole quiz devoted to a topic, it's safe to say that it's
 confusing.
@@ -79,8 +81,10 @@ will make you use map, you could write the stupid repetitive recursion out every
 Additionally, many languages provide some sort of construct to let you avoid
 `map`, `filter`, or whatever. For example, in Haskell
 
+``` haskell
     filter even . map (+1) $ [1..10]
     [x + 1 | x <- [1..10], even x]
+```
 
 Perfect for a beginner. In fact, Python stole these for precisely this reason.
 
@@ -104,10 +108,12 @@ is important because it has side effects.
 
 I said "primarily pure" because some things are really impure, the classic example being `readLine`.
 
+``` python
     print "Enter your age:";
     age = readLine();
     print "Enter your height:";
     height = readLine();
+```
 
 Now if we'd hope that `age` and `height` contain different values. In Haskell we have monads for
 this, but those are notoriously hard to understand. Instead, pragmatic impurity is probably the
