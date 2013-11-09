@@ -114,21 +114,23 @@ Now we can write the type of `x`
 
 ```haskell
     newtype X' b a = {unX :: a -> b}
-    type X a = Mu (X a)
+    type X a = Mu (X' a)
 ```
 
 Take a moment to think about this, mentally unfolding we have
 
-    X
-    Mu (X a)
-    Mu X -> a
-    (Mu X -> a) -> a
+    X a
+    Mu (X' a)
+    Mu X' -> a
+    (Mu X' -> a) -> a
     ...
 
 There we go! Now for that y combinator
 
 ```haskell
-    y f = (\x -> f (unfold x x)) $ fold (\x -> f (unfold x x))
+    unfold' = unX  . unfold
+    fold'   = fold . X'
+    y f = (\x -> f (unfold' x x)) $ fold' (\x -> f (unfold' x x))
 ```
 
 and finally
