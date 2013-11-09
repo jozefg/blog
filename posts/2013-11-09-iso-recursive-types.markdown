@@ -95,7 +95,7 @@ What are iso-recursive types? Well they're like recursive types, but
 they provide two operations, `fold` and `unfold`.
 
 ```haskell
-    unfold :: T -> μX. [μX. T/X]T
+    unfold :: μX. T -> [μX. T/X]T
     fold   :: [μX. T/T]T -> μX. T
 ```
 
