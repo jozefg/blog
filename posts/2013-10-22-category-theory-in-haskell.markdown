@@ -11,8 +11,6 @@ they require no knowledge of category theory, but I expect the reader
 to be familiar with Haskell. I will make various parallels to set theory,
 but they can be skipped in favor of the corresponding Haskell code.
 
-### ToC
-1. What is a category?
 ### Categories
 
 What is a category?
@@ -85,3 +83,5 @@ Next is Haskell, this category is called `Hask`.
   3. The identity arrows are all given by `id`
   4. Arrow composition is just `.`
   5. We know that `id . f = f . id = f` in Haskell
+
+There you have it, our start into the wide world of category theory.
