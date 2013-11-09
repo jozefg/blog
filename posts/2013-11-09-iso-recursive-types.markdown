@@ -91,7 +91,7 @@ And `x`'s first argument is `x`, so
 But this isn't legal! We can't have infinite types like that. Don't
 despair though, we're going to use the magic of iso-recursive types.
 
-What are iso-recursive types? Well they're like recursive types, but
+What are iso-recursive types? Well they're like (equi-)recursive types, but
 they provide two operations, `fold` and `unfold`.
 
 ```haskell
@@ -100,7 +100,9 @@ they provide two operations, `fold` and `unfold`.
 ```
 
 Where `[foo/bar]baz` means, "substitute all occurrences of `bar` with `foo` in
-`baz`.
+`baz`. When trying to unify iso-recursive types, we don't consider a type equal
+to an unfolding of that type. This makes type inference considerably easier since
+we're requiring the user to explicitly fold and unfold types.
 
 We can write these in Haskell
 
