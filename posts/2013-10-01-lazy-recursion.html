@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title> C&amp;C -  Naive Map Isn't So Naive</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../"> Code &amp; Co. </a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Blog</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Naive Map Isn't So Naive</h1>
+            <div class="info">
+    Posted on October  1, 2013
+    
+</div>
+
+<p>One of the most beloved functions in functional programming languages is <code>map</code>. It can be defined like this:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    map ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+    <span class="fu">map</span> f (x<span class="fu">:</span>xs) <span class="fu">=</span> f x <span class="fu">:</span> <span class="fu">map</span> f xs
+    <span class="fu">map</span> _ []     <span class="fu">=</span> []</code></pre>
+<p>However in a lot of languages, writing <code>map</code> like this is a no-no. It’s not tail recursive! For example in OCaml</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">    # <span class="kw">let</span> <span class="kw">rec</span> my_map f = <span class="kw">function</span>
+       | [] -&gt; []
+       | x :: xs -&gt; f x :: my_map f xs
+
+    # my_map ((+) 1) list_from_0_to_5000000
+    ... <span class="dt">Wait</span> a bit ...
+    <span class="dt">Error:</span> <span class="dt">Stackoverflow</span></code></pre>
+<p>Urk! That’s annoying. The problem is that we have to make a recursive function call that can’t be compiled down to a loop (tail recursion). Well, let’s look at how <code>map</code> is defined in Haskell to avoid this problem</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="co">-- In Base</span>
+<span class="ot">    map ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+    <span class="fu">map</span> f (x<span class="fu">:</span>xs) <span class="fu">=</span> f x <span class="fu">:</span> <span class="fu">map</span> f xs
+    <span class="fu">map</span> _ []     <span class="fu">=</span> []</code></pre>
+<p>Wait, isn’t this bad? We just saw how this isn’t tail recursive!</p>
+<p>The thing is, in Haskell things are lazy. <code>map (+1) [1..10000]</code> returns a thunk. Inside that thunk is something like this</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    (<span class="fu">:</span>) <span class="dv">1</span> {thunk to get rest <span class="kw">of</span> list}</code></pre>
+<p>So this takes constant space! After all, none of those extra stack frames are used because <code>:</code> doesn’t evaluate its arguments. This means that a lot of not tail recursive functions in Haskell still take constant space, however, you have to be careful about consuming the results.</p>
+<p>Take for example <code>sum</code>.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    sum ::</span> [<span class="dt">Integer</span>] <span class="ot">-&gt;</span> <span class="dt">Integer</span>
+    <span class="fu">sum</span> (x<span class="fu">:</span>xs) <span class="fu">=</span> x <span class="fu">+</span> <span class="fu">sum</span> xs
+    <span class="fu">sum</span> []     <span class="fu">=</span> <span class="dv">0</span></code></pre>
+<p>Now this also isn’t tail recursive, but there’s a problem: <code>+</code> is strict. By this I mean that to evaluate <code>a+b</code> you must first evaluate <code>a</code> and then <code>b</code>. This means that to evaluate <code>x + sum xs</code> we have to evaluate <code>sum xs</code>.</p>
+<p>Urk, now we’re building up a big pile of expressions, something like</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    a <span class="fu">+</span> <span class="fu">sum</span> (b<span class="fu">:</span>c<span class="fu">:</span>d<span class="fu">:</span>e<span class="fu">:</span>[])
+    a <span class="fu">+</span> (b <span class="fu">+</span> <span class="fu">sum</span> (c<span class="fu">:</span>d<span class="fu">:</span>e<span class="fu">:</span>[]))
+    a <span class="fu">+</span> (b <span class="fu">+</span> (c <span class="fu">+</span> <span class="fu">sum</span> (d<span class="fu">:</span>e<span class="fu">:</span>[])))
+    a <span class="fu">+</span> (b <span class="fu">+</span> (c <span class="fu">+</span> (d <span class="fu">+</span> <span class="fu">sum</span> (e<span class="fu">:</span>[]))))
+    a <span class="fu">+</span> (b <span class="fu">+</span> (c <span class="fu">+</span> (d <span class="fu">+</span> (e <span class="fu">+</span> <span class="dv">0</span>))))</code></pre>
+<p>Now we can see why this will blow up, it’s building up a huge expression before we can evaluate anything. Hi stack overflow.</p>
+<p>Now this is when we do want the tail recursive function like <code>foldl'</code> to keep things in constant space.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>When you construct something with <code>:</code> for example, it’s possible to evaluate the head without evaluating the tail. Similarly with most constructors. With things like this, it’s possible to keep naive recursion in constant space.</p>
+
+        </div>
+        <div id="footer">
+            Site generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

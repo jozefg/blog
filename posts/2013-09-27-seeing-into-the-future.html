@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title> C&amp;C -  Logic and Continuations</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../"> Code &amp; Co. </a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Blog</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Logic and Continuations</h1>
+            <div class="info">
+    Posted on September 27, 2013
+    
+</div>
+
+<p>In Haskell there’s a monad known as <code>Cont</code>. Most people don’t use it, but it’s pretty cool. The basic idea is that</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     <span class="dt">Cont</span> r a <span class="fu">=</span> <span class="dt">Cont</span> {<span class="ot">runCont ::</span> (a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> r}</code></pre>
+<p>The intuition being that that <code>(a -&gt; r)</code> term is the “rest of the program”. You feed it the type it is expecting and it will happily run the rest of your computation.</p>
+<h3 id="deriving-monad-cont-r">Deriving Monad (Cont r)</h3>
+<p><code>return</code> is easy</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="fu">return</span> a <span class="fu">=</span> <span class="dt">Cont</span> (<span class="fu">$</span>a)</code></pre>
+<p>or</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="fu">return</span> a <span class="fu">=</span> <span class="dt">Cont</span> <span class="fu">$</span> \c <span class="ot">-&gt;</span> c a</code></pre>
+<p>Bind is a little trickier</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    (<span class="dt">Cont</span> c) <span class="fu">&gt;&gt;=</span> f <span class="fu">=</span> <span class="dt">Cont</span> (\rest <span class="ot">-&gt;</span> c <span class="fu">$</span> \a <span class="ot">-&gt;</span> runCont (f a) rest)</code></pre>
+<p>Think of this as feeding the continuation <code>c :: (a -&gt; r) -&gt; r</code> a function made by with a continuation <code>runCont . f :: a -&gt; (b -&gt; r) -&gt; r</code> and <code>rest :: (b -&gt; r)</code> to make something of type <code>a -&gt; r</code>.</p>
+<p>Yeah it hurts your head a little.</p>
+<p>Now let’s talk about seeing into the future.</p>
+<h3 id="back-to-the-future">Back to the Future</h3>
+<p>First things first, to conform with how the MTL does stuff</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     cont <span class="fu">=</span> <span class="dt">Cont</span></code></pre>
+<p>Because in the real <code>Control.Monad.Cont</code>, there’s a monad transformer and a type synonym</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     <span class="kw">type</span> <span class="dt">Cont</span> r a <span class="fu">=</span> <span class="dt">ContT</span> r <span class="dt">Identity</span> a</code></pre>
+<p>or something like that.</p>
+<p>Let’s try a simple application of <code>Cont</code>. Suppose we have a function of type <code>[a -&gt; Bool] -&gt; [a] -&gt; [a]</code> and we want to return the longest list of <code>a</code>s that satisfies one of the predicates in our list. Yeah it’s contrived but I’ll show you a more realistic example in a second:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     longest preds as <span class="fu">=</span> <span class="kw">do</span>
+       p <span class="ot">&lt;-</span> selectPred preds
+       <span class="fu">return</span> (<span class="fu">filter</span> p as)</code></pre>
+<p>Now we just need to define <code>selectPred</code> so that it can “know” which predicate will return the longest list</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    selectPred ps <span class="fu">=</span> cont <span class="fu">$</span> \c <span class="ot">-&gt;</span> maxBy <span class="fu">length</span> <span class="fu">.</span> <span class="fu">map</span> c <span class="fu">$</span> ps</code></pre>
+<p>That’s it. It’s actually running the program with each possible value and then returns the best result. Cool right?</p>
+<p>Note that it’s kind of important that things are pure here. If you have an <code>unsafePerformIO</code> and you start backtracking things get hairy. However, since you can toss around <code>IO</code>s without evaluating them, eg</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     <span class="fu">const</span> <span class="dv">1</span> (<span class="fu">print</span> <span class="st">&quot;foo&quot;</span>)</code></pre>
+<p>Doesn’t print <code>foo</code> or anything, you can have <code>ContT</code> layered over IO.</p>
+<h4 id="logic-framework">Logic Framework</h4>
+<p>Now let’s use this to create a simple framework for non-deterministic logic programming. Some skeleton code:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="ot">{-# LANGUAGE RankNTypes #-}</span>
+    <span class="kw">newtype</span> <span class="dt">Logic</span> a <span class="fu">=</span> <span class="dt">Logic</span> {<span class="ot">runLogic ::</span> forall r<span class="fu">.</span>  <span class="dt">Cont</span> (<span class="dt">Maybe</span> r) a}
+    <span class="kw">instance</span> <span class="kw">Monad</span> <span class="dt">Logic</span> <span class="kw">where</span>
+      <span class="fu">return</span> a <span class="fu">=</span> <span class="dt">Logic</span> <span class="fu">$</span> <span class="fu">return</span> a
+      (<span class="dt">Logic</span> c) <span class="fu">&gt;&gt;=</span> f  <span class="fu">=</span> <span class="dt">Logic</span> <span class="fu">$</span> c <span class="fu">&gt;&gt;=</span> runLogic <span class="fu">.</span> f</code></pre>
+<p>The <code>RankNTypes</code> basically says a logical computation can’t make assumptions about the result, which is pretty reasonable. The monad instance is just relying on the underlying <code>Cont</code> instance. Now we want three functions:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    amb ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Logic</span> a
+<span class="ot">    disconj ::</span> <span class="dt">Logic</span> a <span class="ot">-&gt;</span> <span class="dt">Logic</span> a <span class="ot">-&gt;</span> <span class="dt">Logic</span> a
+<span class="ot">    backtrack ::</span> <span class="dt">Logic</span> ()</code></pre>
+<p>where <code>backtrack</code> backtracks to the nearest <code>amb</code> and tries the next element and <code>disconj</code> simply joins together two propositions and chooses an element from one that won’t fail (return <code>Nothing</code>).</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    backtrack <span class="fu">=</span> <span class="dt">Logic</span> (cont <span class="fu">$</span> <span class="fu">const</span> <span class="kw">Nothing</span>)
+    disconj (<span class="dt">Logic</span> a) (<span class="dt">Logic</span> b) <span class="fu">=</span> <span class="dt">Logic</span> (cont <span class="fu">$</span> \c <span class="ot">-&gt;</span> runCont a c <span class="ot">`mplus`</span> runCont b c)
+    amb as <span class="fu">=</span> <span class="dt">Logic</span> (cont <span class="fu">$</span> \c <span class="ot">-&gt;</span> join <span class="fu">.</span> find isJust <span class="fu">.</span> <span class="fu">map</span> (c<span class="fu">$</span>) <span class="fu">$</span> as)</code></pre>
+<p>Note: with RankNTypes weird things can happen with <code>.</code> for example, using <code>Logic . cont</code> is ill typed presumably because GHC restricts the <code>Cont</code> being fed to <code>Logic</code>.</p>
+<p>Now these actually map nicely to an existing typeclass.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     <span class="kw">instance</span> <span class="dt">MonadPlus</span> <span class="dt">Logic</span> <span class="kw">where</span>
+       mzero <span class="fu">=</span> backtrack
+       mplus <span class="fu">=</span> disconj</code></pre>
+<p>Also helpful is</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    evaluate ::</span> <span class="dt">Logic</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+    evaluate <span class="fu">=</span> <span class="fu">flip</span> runCont <span class="kw">Just</span> <span class="fu">.</span> runLogic</code></pre>
+<p>So let’s try it out:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     main <span class="fu">=</span> <span class="fu">print</span> <span class="fu">.</span> evaluate <span class="fu">$</span> <span class="kw">do</span>
+       a <span class="ot">&lt;-</span> amb [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]<span class="ot"> ::</span> <span class="dt">Logic</span> <span class="dt">Integer</span>
+       b <span class="ot">&lt;-</span> amb [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]
+       when (a <span class="fu">+</span> b <span class="fu">/=</span> <span class="dv">9</span>) mzero
+       <span class="fu">return</span> (a, b)</code></pre>
+<p>and perhaps a helpful combinator</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     assert <span class="fu">=</span> <span class="fu">flip</span> when mzero</code></pre>
+<p>makes</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     main <span class="fu">=</span> <span class="fu">print</span> <span class="fu">.</span> evaluate <span class="fu">$</span> <span class="kw">do</span>
+       a <span class="ot">&lt;-</span> amb <span class="st">&quot;floor&quot;</span>
+       b <span class="ot">&lt;-</span> amb <span class="st">&quot;bar&quot;</span>
+       assert (a<span class="fu">==</span>b)
+       <span class="fu">return</span> (a, b)</code></pre>
+<p>And there you have it, using continuations we have created a logic DSL. The interesting bit is that each <code>amb</code> is actually running the code multiple times and “seeing into the future”. Once it has which element will actually return a desirable result it pops it back. Nifty.</p>
+<h3 id="an-exercise-to-the-reader">An exercise to the reader</h3>
+<p>A useful exercise is to add 1 of 2 combinators</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    cut ::</span> <span class="dt">Logic</span> ()
+<span class="ot">    interleave ::</span> <span class="dt">Logic</span> a <span class="ot">-&gt;</span> <span class="dt">Logic</span> b <span class="ot">-&gt;</span> <span class="dt">Logic</span> (a, b)</code></pre>
+<p><code>cut</code> doesn’t backtrack. To implement this, you’ll have to use <code>callCC</code> and pass the escape continuation around and call it from <code>cut</code> if something tries to backtrack past it.</p>
+<p><code>interleave</code> is also cool, it’s fair disjunction. Our current setup can’t handle</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     a <span class="ot">&lt;-</span> amb [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]
+     b <span class="ot">&lt;-</span> amb [<span class="dv">1</span><span class="fu">..</span>]
+     assert ( a <span class="fu">==</span> <span class="dv">2</span> )</code></pre>
+<p>It’ll get stuck fiddling with the value of <code>b</code>! With <code>interleave</code> we’d type</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">     (a, b) <span class="ot">&lt;-</span> interleave (amb [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]) (amb [<span class="dv">1</span><span class="fu">..</span>])</code></pre>
+<p>and it will give us pairs “fairly” by returning pairs so that the probability of <code>(n, m)</code> being returned when <code>n</code> is <code>a</code> elements into the first computation and <code>m</code> is <code>b</code> elements into the second is <code>k / (a + b)</code>.</p>
+<p>Good luck!</p>
+
+        </div>
+        <div id="footer">
+            Site generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

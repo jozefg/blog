@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title> C&amp;C -  Leaving Go</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../"> Code &amp; Co. </a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Blog</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Leaving Go</h1>
+            <div class="info">
+    Posted on August 23, 2013
+    
+</div>
+
+<p>I’ve been using Go since November and I’ve decided that it’s time to give it up for my hobby projects. I’d still be happy to use it professionally, but I find that programming in Go isn’t “fun” in the same way that Python, Haskell, or Lisp is.</p>
+<h2 id="go-the-good">Go, The Good</h2>
+<p>The best part about Go isn’t actually Go. The community and infrastructure around it are excellent. The command line <code>go</code> tool really is nice.</p>
+<p>By far my favorite part is <code>go get</code>. Package management is something that many a community has failed to address but Go seems to have handled it nicely.</p>
+<p>This isn’t shocking I suppose. Go was definitely made by engineers to solve a very real world problem. I haven’t used Go for a project with 10 or 20 people but I suspect it would scale wonderfully.</p>
+<p>On the squishier side, Go’s community is reasonably friendly. No newbies got their heads bitten off as far as I could see.</p>
+<h2 id="go-the-not-so-good">Go, The Not So Good</h2>
+<p>While the community for Go is great, the language is ehhh. Unfortunately, when I’m working on hobby projects, this is 80% of my concern. VB has good support, but I’m not hacking it.</p>
+<p>The two main issues I have with Go are</p>
+<ol style="list-style-type: decimal">
+<li>The Type System</li>
+<li>Extensibility</li>
+</ol>
+<h3 id="the-type-system">The Type System</h3>
+<p>Go’s type system is well… lacking as it stands right now. The main problem is that Go provides no safe system for polymorphism.</p>
+<p>I’ll give you a trivial example, define a generic absolute value function in Go.</p>
+<pre class="sourceCode go"><code class="sourceCode go">     <span class="kw">func</span> abs(x ???) ???{
+         ???
+    }</code></pre>
+<p>Now what are those <code>???</code> supposed to be? Well, we have no notion of parametric polymorphism so our only choice is subtyping polymorphism.</p>
+<pre class="sourceCode go"><code class="sourceCode go">     <span class="kw">func</span> abs(x <span class="kw">interface</span>{}) <span class="kw">interface</span>{} {
+         ???
+    }</code></pre>
+<p>So now that we’ve just taken all our lovely, optimization friendly type information and thrown it away, let’s manually get it back!</p>
+<pre class="sourceCode go"><code class="sourceCode go">    <span class="kw">type</span> Top <span class="kw">interface</span>{}
+    <span class="kw">func</span> abs(x Top) Top {
+        <span class="kw">switch</span> x.(<span class="kw">type</span>){
+	        <span class="kw">case</span> <span class="dt">int32</span>:
+    		    <span class="kw">if</span> x.(<span class="dt">int32</span>) &lt; 0 {
+			        <span class="kw">return</span> -x.(<span class="dt">int32</span>)
+		        } <span class="kw">else</span> {
+    			    <span class="kw">return</span> x.(<span class="dt">int32</span>)
+		        }
+	        <span class="kw">case</span> <span class="dt">int64</span>:
+        		<span class="kw">if</span> x.(<span class="dt">int64</span>) &lt; 0 {
+			        <span class="kw">return</span> -x.(<span class="dt">int64</span>)
+		        } <span class="kw">else</span> {
+        			<span class="kw">return</span> x.(<span class="dt">int64</span>)
+		        }
+	        <span class="kw">case</span> <span class="dt">float32</span>:
+        		<span class="kw">if</span> x.(<span class="dt">float32</span>) &lt; 0 {
+			        <span class="kw">return</span> -x.(<span class="dt">float32</span>)
+		        } <span class="kw">else</span> {
+        			<span class="kw">return</span> x.(<span class="dt">float32</span>)
+		        }
+	        <span class="kw">case</span> <span class="dt">float64</span>:
+        		<span class="kw">if</span> x.(<span class="dt">float64</span>) &lt; 0 {
+			        <span class="kw">return</span> -x.(<span class="dt">float32</span>)
+		        } <span class="kw">else</span> {
+                            <span class="kw">return</span> x.(<span class="dt">float64</span>)
+		        }
+            }
+        <span class="kw">return</span> <span class="ot">nil</span>
+    }</code></pre>
+<p>Holy boilerplate batman! And using this means we are forced to stick a cast right in the middle of our perfectly safe code.</p>
+<p>By the way, there’s an error in the above code? Did you catch it? It’s tricky because with all this code duplication you tend to just skim over the boilerplate and miss the nasty runtime errors.</p>
+<p>A type system that regularly requires casts is just gross, it’s a sign that the type system isn’t expressive enough to describe a problem.</p>
+<p>What would happen if we wrote this in Haskell?</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    abs ::</span> <span class="kw">Num</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a
+    <span class="fu">abs</span> a <span class="fu">=</span> <span class="kw">if</span> a <span class="fu">&lt;</span> <span class="dv">0</span> <span class="kw">then</span> <span class="fu">-</span>a <span class="kw">else</span> a</code></pre>
+<p>See the difference? And the Haskell version is extensible and cast free, it’ll work for any user defined types.</p>
+<p>Now let’s be fair to Go, we can try this</p>
+<pre class="sourceCode go"><code class="sourceCode go">     <span class="kw">type</span> Abser <span class="kw">interface</span>{
+         <span class="kw">func</span> Negate() Abser
+         <span class="kw">func</span> LtZero() Abser
+     }
+     <span class="kw">func</span> Abs2(x Abser) Abser{
+         <span class="kw">if</span> x.LtZero() {
+             <span class="kw">return</span> x.Negate()
+         }
+         <span class="kw">return</span> x
+     }</code></pre>
+<p>But this still isn’t close to Haskell’s version for several reasons, the biggest one for me is that this version takes in some <code>Abser</code> and returns some <code>Abser</code>. Are those the same underlying implementations? Who knows!</p>
+<p>So we still have an unsafe cast in there just to use it because we have no way of statically verifying that we’re getting the same underlying type back.</p>
+<p>This kills any chance of safely composing functions that take in different interfaces, for example, if we had a function over <code>int32</code>s, we couldn’t do <code>someFunc(abs(x))</code> because we’d have to stick our cast in there, <code>someFunc(abs(x).(int32))</code>. Now we’re just asking for trouble when there’s some error in the function that leads to a casting failure.</p>
+<p>Doing this safely in Go looks like this,</p>
+<pre class="sourceCode go"><code class="sourceCode go">    newX, err := abs(x).(<span class="dt">int32</span>)
+    <span class="kw">if</span> err != <span class="ot">nil</span> {
+        fmt.Println(<span class="st">&quot;Darn it!&quot;</span>)
+        <span class="co">// Handle errors</span>
+    }
+    someFunc(newX)</code></pre>
+<p>Now if that doesn’t grind on you I really don’t know what would.</p>
+<p>I don’t mind dynamic typing and the possibility of runtime errors, Python is fun to program in just like Haskell. But Go is imposing all the pain of static typing with pretty much none of the benefits.</p>
+<p>The response of the Go community is “Abs is a 2 line function, just do it inline or per type” to which I respond: I want to define a generic algorithm, or datastructure, or really anything reasonably complex!</p>
+<p>When I started Go, I thought this was just me missing a few clever tricks for how to properly utilize Go, I’m not so sure anymore. The entire Go math library requires casts to <code>float64</code>s to use, using a stack in Go requires casts from <code>interface{}</code>.</p>
+<p>Coming from Haskell and Coq, this is not something I should have to put up with in 2013.</p>
+<h3 id="extensibility">Extensibility</h3>
+<p>Consider the keyword <code>range</code>. It’s a deeply magical keyword that only works inside <code>for</code> loops on Go’s primitive data structures.</p>
+<p>I like writing compilers so I end up dealing a lot with trees. I often want to have <code>range</code> traverse my AST? Tough, ain’t gonna happen!</p>
+<p>This is just one example of many</p>
+<ul>
+<li>Only Go’s primitive types may by parameterized over other types</li>
+<li>Only magical primitive functions may return 1 or 2 arguments depending on context</li>
+<li>Only magical primitives have real parametric polymorphism</li>
+<li>Only Go’s primitives may have infix operators</li>
+<li>and on and on and on!</li>
+</ul>
+<p>These are all hitting the same problem, Go is not extensible. There simply isn’t a way to define a type and expect it to be as pleasant to use as a slice.</p>
+<p>This apparently doesn’t bother Go’s maintainers, presumably because they designed Go and deal with problems which slices, maps, and chans model beautifully. For the rest of the world, it’s a pain in the butt.</p>
+<p>Guy Steele gave a wonderful talk about “growing a language”. The core idea was to start with a small but very extensible language and allow <em>users</em> to determine which features are added.</p>
+<p>The idea is that there’s simply no way that any group of designers could imagine how people will want to use their language so making it easy to extend solves the problem wonderfully.</p>
+<p>In Lisp, CLOS (Common Lisp Object System) was originally a library. It was a user defined abstraction that was so popular it was ported into the standard.</p>
+<p>Go is just the opposite. Any user defined abstractions are painfully, obnoxiously obvious. Go developers seems to consider this a “Good Thing”. On one hand it does aid code readability. On the other, it really limits what Go’s pleasant to use for.</p>
+<p>As a trivial case study. Imagine we wanted to use Go for some form of scientific computing. We’d need some sort of Bignum type because <code>int64</code> ain’t gonna hack it. In Python or Haskell, here’s how you add 2 bignums,</p>
+<pre><code>a + b</code></pre>
+<p>Here’s how you do it in Go,</p>
+<pre><code>a.Add(b)</code></pre>
+<p>Ok, it’s only a few characters, big deal. Now what does this do?</p>
+<pre><code>b.Mul(b).Sub(big.NewInt(4).Mul(a).Mul(c))</code></pre>
+<p>Or in Haskell</p>
+<pre><code>b*b - 4 * a * c</code></pre>
+<p>Which would you rather write? More importantly, which would you rather read?</p>
+<p>I can’t help but feel like Go was designed with only problems the designers were facing in mind. This is great for them, but calling Go a general purpose language should mean that it’s nice to use for other sorts of problems too.</p>
+<p>The argument of “it makes the code hard to read” seems a bit odd to me. Bad devs write bad code, but that doesn’t mean you should make it hard for good ones to write clean, concise code.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I’m really sad to have written this actually. I wanted to like Go a lot. I wanted a fast, compiled replacement for stuff I write in C right now. But Go is not that language. Shame.</p>
+<p>Thank you to the Go team for all the hard work on the project and best of luck.</p>
+
+        </div>
+        <div id="footer">
+            Site generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>
