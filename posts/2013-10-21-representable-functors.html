@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title> C&amp;C -  Representable Functors</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../"> Code &amp; Co. </a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Blog</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Representable Functors</h1>
+            <div class="info">
+    Posted on October 21, 2013
+    
+</div>
+
+<p>Representable functors are a powerful tool in category theory. As it turns out, they’re pretty useful in Haskell as well. Here’s a few examples of what they are and how to use them</p>
+<p>First, some definition. We’re interested in <code>Hask</code> which the category where objects are types and arrows are functions. A representable functor for us, is a special functor from <code>Hask -&gt; Hask</code> (an endofunctor). Now when we apply category theory to Haskell, we also pretend <code>Hask</code> is <code>Set</code> (The category of sets). There’s a type of functor called a <code>hom-functor</code>. It’s a functor that looks like this</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="kw">newtype</span> <span class="dt">Hom</span> a <span class="fu">=</span> (<span class="ot">-&gt;</span>) a
+    <span class="co">-- Hom a b = a -&gt; b</span></code></pre>
+<p>Now, a <code>Hom</code> implements <code>Functor</code> like this</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="kw">instance</span> <span class="kw">Functor</span> <span class="dt">Hom</span> <span class="kw">where</span>
+        <span class="fu">fmap</span> f hom <span class="fu">=</span> f <span class="fu">.</span> hom</code></pre>
+<p>In other words, <code>Hom a</code> takes an object <code>b</code> to the set of all morphisms <code>a -&gt; b</code>. It takes an arrow <code>b -&gt; c</code> to the function <code>Hom a b -&gt; Hom a c</code> using composition. Nothing stunning yet.</p>
+<p>Now consider some arbitrary functor <code>F</code>. Suppose there exists an object <code>a</code> so that <code>F</code> is isomorphic to <code>Hom a</code>. What would this look like?</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="kw">type</span> family <span class="dt">Obj</span> (<span class="ot">f ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span>)<span class="ot"> ::</span> <span class="fu">*</span>
+    <span class="kw">class</span> <span class="kw">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">HomIso</span> f <span class="kw">where</span>
+<span class="ot">      toHom ::</span> f a <span class="ot">-&gt;</span> <span class="dt">Hom</span> (<span class="dt">Obj</span> f) a
+<span class="ot">      toF   ::</span> <span class="dt">Hom</span> (<span class="dt">Obj</span> f) a <span class="ot">-&gt;</span> f a</code></pre>
+<p>And we have the laws that</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    toHom <span class="fu">.</span> toF <span class="fu">=</span> <span class="fu">id</span>
+    toF <span class="fu">.</span> toHom <span class="fu">=</span> <span class="fu">id</span></code></pre>
+<p>Then <code>f</code> is a representable functor. From now on, I will refer to <code>HomIso</code> as <code>Repr</code> to emphasize this. The simplest representable functor is of course <code>Hom a</code>.</p>
+<p>Let’s notice some useful properties of representable functors.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    lookup ::</span> <span class="dt">Repr</span> f <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> <span class="dt">Obj</span> f <span class="ot">-&gt;</span> a
+    <span class="fu">lookup</span> <span class="fu">=</span> toHom</code></pre>
+<p>Our functor can look things up! Cool! Let’s use this idea to guide us to finding some simple representable functors. Let’s look at a trivial case</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="kw">newtype</span> <span class="dt">Identity</span> a <span class="fu">=</span> <span class="dt">Identity</span> {<span class="ot">runIdentity ::</span> a}
+                       <span class="kw">deriving</span>(<span class="kw">Eq</span>, <span class="kw">Show</span>, <span class="kw">Functor</span>)
+
+    <span class="kw">newtype</span> <span class="dt">Unit</span> <span class="fu">=</span> <span class="dt">Unit</span>
+    <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Obj</span> <span class="dt">Identity</span> <span class="fu">=</span> <span class="dt">Unit</span>
+    
+    <span class="kw">instance</span> <span class="dt">Repr</span> <span class="dt">Identity</span> <span class="kw">where</span>
+      toHom (<span class="dt">Identity</span> a) <span class="fu">=</span> <span class="fu">const</span> a
+      toF f <span class="fu">=</span> <span class="dt">Identity</span> <span class="fu">$</span> f <span class="dt">Unit</span></code></pre>
+<p>Since <code>Identity</code> has only one value, <code>Unit</code> indexes it exactly. A more complicated example</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="kw">data</span> <span class="dt">Prod</span> a <span class="fu">=</span> <span class="dt">Prod</span> a a
+                <span class="kw">deriving</span>(<span class="kw">Eq</span>, <span class="kw">Show</span>, <span class="kw">Functor</span>)
+
+    <span class="kw">data</span> <span class="dt">Two</span> <span class="fu">=</span> <span class="dt">InL</span> <span class="fu">|</span> <span class="dt">InR</span>
+    <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Obj</span> <span class="dt">Prod</span> <span class="fu">=</span> <span class="dt">Two</span>
+
+    <span class="kw">instance</span> <span class="dt">Repr</span> <span class="dt">Prod</span> <span class="kw">where</span>
+      toHom (<span class="dt">Prod</span> a _) <span class="dt">InL</span>  <span class="fu">=</span> a
+      toHom (<span class="dt">Prod</span> _ a) <span class="dt">InR</span> <span class="fu">=</span> b
+      toF hom <span class="fu">=</span> <span class="dt">Prod</span> (hom <span class="dt">InL</span>) (hom <span class="dt">InR</span>)</code></pre>
+<p>This is all quite well, but what about infinite data structures? This is Haskell! we want those too.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="kw">data</span> <span class="dt">Forever</span> a <span class="fu">=</span> <span class="dt">Cons</span> a (<span class="dt">Forever</span> a)
+                   <span class="kw">deriving</span> (<span class="kw">Functor</span>)
+
+    <span class="kw">data</span> <span class="dt">Nat</span> <span class="fu">=</span> <span class="dt">Z</span> <span class="fu">|</span> <span class="dt">S</span> <span class="dt">Nat</span>
+    <span class="kw">type</span> <span class="kw">instance</span> <span class="dt">Obj</span> <span class="dt">Forever</span> <span class="fu">=</span> <span class="dt">Nat</span>
+
+    <span class="kw">instance</span> <span class="dt">Repr</span> <span class="dt">Forever</span> <span class="kw">where</span>
+      toHom (<span class="dt">Cons</span> a as) <span class="dt">Z</span> <span class="fu">=</span> a
+      toHom (<span class="dt">Cons</span> a as) (<span class="dt">S</span> n) <span class="fu">=</span> toHom as n
+
+      toF f <span class="fu">=</span> cs z
+        <span class="kw">where</span> cs n <span class="fu">=</span> <span class="dt">Cons</span> (f n) (cs (<span class="dt">S</span> n))</code></pre>
+<p>Since <code>Forever</code> goes, well, forever. It can be keyed with natural numbers, which we represent here with <code>Nat</code>. Then <code>toHom</code> is classic recursion and <code>toF</code> is classic co-recursion.</p>
+<p>There are tons more of these, but hopefully now you’re getting the idea. Here’s another cool thought</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    switch ::</span> (<span class="dt">Repr</span> f, <span class="kw">Functor</span> g) <span class="ot">=&gt;</span> g (f a) <span class="ot">-&gt;</span> f (g a)
+    switch g <span class="fu">=</span> toF <span class="fu">$</span> \obj <span class="ot">-&gt;</span> <span class="fu">fmap</span> (<span class="fu">$</span> obj) hom
+      <span class="kw">where</span> hom <span class="fu">=</span> <span class="fu">fmap</span> toHom g</code></pre>
+<p>Wait a moment, what if <code>f</code> and <code>g</code> where both <code>Repr</code> instances? Then</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    switch <span class="fu">.</span> switch <span class="fu">=</span> <span class="fu">id</span></code></pre>
+<p>Neat! We can use representable functors to switch around functors.</p>
+<p>Now, what about applicatives, can we use a representative functor to build one?</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="co">-- To keep type classes from getting confused</span>
+    <span class="kw">newtype</span> <span class="dt">Wrap</span> f a <span class="fu">=</span> <span class="dt">Wrap</span> {<span class="ot">unWrap ::</span> f a}
+
+    <span class="kw">instance</span> (<span class="dt">Repr</span> f) <span class="ot">=&gt;</span> <span class="kw">Applicative</span> (<span class="dt">Wrap</span> f) <span class="kw">where</span>
+      pure    <span class="fu">=</span> toF <span class="fu">.</span> <span class="fu">const</span>
+      f <span class="fu">&lt;*&gt;</span> a <span class="fu">=</span> toF <span class="fu">$</span> \obj <span class="ot">-&gt;</span> toHom f obj <span class="fu">$</span> toHom a obj</code></pre>
+<p>So we can actually build out applicatives from a representable functor. How about monads?</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="kw">instance</span> (<span class="dt">Repr</span> f) <span class="ot">=&gt;</span> <span class="kw">Monad</span> (<span class="dt">Wrap</span> f) <span class="kw">where</span>
+      <span class="fu">return</span> <span class="fu">=</span> toF <span class="fu">.</span> <span class="fu">const</span>
+      m <span class="fu">&gt;&gt;=</span> f <span class="fu">=</span> toF <span class="fu">$</span> \obj <span class="ot">-&gt;</span> (<span class="fu">$</span>obj) <span class="fu">.</span> toHom <span class="fu">.</span> f <span class="fu">$</span> toHom m obj</code></pre>
+<p>Notice how these are working? The functor and monad are defined “pointwise”. Basically we’re applying each function at a “point” in our functor’s underlying structure and then peeking at the result at that point.</p>
+<p>If we translate this into <code>Forever</code> functor, our applicative instance would correspond to taking a stream of functions, and zipping it with a stream of values. Our monad instance would do the same, and select the point in the same position in the resulting list. That’s why we often refer to these as zippy monads.</p>
+<p>Well hopefully I’ve convinced you that representable functors are interesting, remember, we were able to build all of this from a simple isomorphism with <code>Hom</code>. Cool right?</p>
+
+        </div>
+        <div id="footer">
+            Site generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>
