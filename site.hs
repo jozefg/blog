@@ -4,7 +4,7 @@ import           Data.Monoid (mappend)
 import           Hakyll
 
 feedConfiguration =
-  FeedConfiguration { feedTitle = "Code & Co"
+  FeedConfiguration { feedTitle = "Code and Co"
                     , feedDescription = "Articles on functional programming, PLT, types, and other geekery"
                     , feedAuthorName = "Danny Gratzer"
                     , feedAuthorEmail = "danny.gratzer@gmail.com"
