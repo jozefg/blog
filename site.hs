@@ -3,7 +3,12 @@
 import           Data.Monoid (mappend)
 import           Hakyll
 
-
+feedConfiguration =
+  FeedConfiguration { feedTitle = "Code & Co"
+                    , feedDescription = "Articles on functional programming, PLT, types, and other geekery"
+                    , feedAuthorName = "Danny Gratzer"
+                    , feedAuthorEmail = "danny.gratzer@gmail.com"
+                    , feedRoot        = "http://jozefg.bitbucket.org"}
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
@@ -25,6 +30,7 @@ main = hakyll $ do
         route $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
+            >>= saveSnapshot "content"
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
@@ -58,7 +64,13 @@ main = hakyll $ do
                 >>= relativizeUrls
 
     match "templates/*" $ compile templateCompiler
-
+    create ["rss.xml"] $ do
+      route idRoute
+      compile $ do
+        let feedCtx = postCtx `mappend` bodyField "description"
+        posts <- fmap (take 10) . recentFirst =<<
+            loadAllSnapshots "posts/*" "content"
+        renderAtom feedConfiguration feedCtx posts
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
