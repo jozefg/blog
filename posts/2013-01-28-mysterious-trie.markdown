@@ -1,0 +1,96 @@
+---
+title: Optimizing a Trie
+---
+
+The other day I stumbled across some of old code for a trie. Being the hardworking
+and responsible student that I am, I immediately dropped all my homework to try
+and squeeze some performance out of it.
+
+The code I ended up with was something like
+
+``` haskell
+    {-# LANGUAGE ViewPatterns, OverloadedStrings #-}
+    import Data.List
+    import Data.Maybe
+    import qualified Data.Map.Strict as M
+    import Data.Map.Strict ((!))
+    import qualified Data.ByteString.Char8 as B
+    
+    newtype Trie = Node {subs :: M.Map Char Trie}
+      deriving (Eq, Show, Ord)
+    
+    add :: B.ByteString -> Trie -> Trie
+    add (B.uncons -> Just (c, s)) (Node subs) = Node . with . maybe (Node M.empty) id $ M.lookup c subs
+      where with next = M.insert c (add s next) subs
+    
+    add _ trie = trie
+    
+    build :: [B.ByteString] -> Trie
+    build = foldl' (flip add) (Node M.empty)
+    
+    contains :: B.ByteString -> Trie -> Bool
+    contains (B.uncons -> Just (c, s)) (Node subs) = M.member c subs && contains s next
+      where next = subs ! c
+    contains _ _ = True
+```
+
+and so I decided to test it with a simple main
+
+``` haskell
+    main = do
+      trie <- (build . B.lines) `fmap` B.readFile "/usr/share/dict/words"
+      print $ contains "zebra" trie
+```
+
+and compiled it with the standard optimization flags
+
+    > ghc -O2 -fllvm trie.hs
+    > time ./trie
+    True
+
+    real 0m0.964s
+    user 0m0.896s
+    sys  0m0.059s
+
+So pretty reasonably fast for about 500k words. Then to see if I could kick this in the teeth by
+forcing the entire trie I ran
+
+``` haskell
+    main = do
+      words <- B.lines `fmap` B.readFile "/usr/share/dict/words"
+      print $ all (flip contains $ build words) words
+```
+
+And again I ran it
+
+    > ghc -O2 -fllvm trie.hs
+    > time ./trie
+    True
+
+    real 0m1.557s
+    user 0m1.427s
+    sys  0m0.119s
+
+Now this is weird. It seems that such building the trie is such a huge bottleneck that
+the building it takes around .9 seconds and querying it 500k times is only .6 seconds.
+
+Now the next logical step was to see if maybe this was due to a build up of garbage that
+was dominating my time. A quick run with `+RTS -s` gives tells me that about 36% of my time is
+GC on both. This isn't shocking since I'm building up a ton of data over a relatively short period of time.
+
+So it's not GC, and both operations are obviously `O(n)` (remembering that each map has 256 or less entries).
+So the only difference between them is that `add` allocates memory, a new map, and `contains` doesn't.
+So let's confirm our suspicions with a quick round of profiling.
+
+     > ghc -O2 -fllvm -prof -auto-all trie.hs
+     > ./trie
+
+generates `trie.prof` with the profiling information for our runs.
+
+They both inform us that about 97% of time and memory is spent in `add`. Now this
+seems odd, since our time difference between the runs was significant. I hypothesize that
+the reason for this is that when we make 500k queries we're forcing the entire trie which
+is lazy. Indeed looking out the output from `+RTS -s` confirms that the 500k output allocates
+1.69 mb of memory while only one query allocates 80 mb of memory.
+
+So the bottleneck here is that allocation is slow as a dog. More to follow on optimizing this.
