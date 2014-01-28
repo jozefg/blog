@@ -20,7 +20,10 @@ The code I ended up with was something like
       deriving (Eq, Show, Ord)
     
     add :: B.ByteString -> Trie -> Trie
-    add (B.uncons -> Just (c, s)) (Node subs) = Node . with . maybe (Node M.empty) id $ M.lookup c subs
+    add (B.uncons -> Just (c, s)) (Node subs) = Node
+                                               . with
+                                               . maybe (Node M.empty) id
+                                               $ M.lookup c subs
       where with next = M.insert c (add s next) subs
     
     add _ trie = trie
