@@ -21,12 +21,12 @@ Specifically, we'll have a function like this
 
 
 ``` haskell
-    import qualified Data.Map as M
+    import qualified Data.IntMap.Strict as M
     import Data.List
-    sieve' :: [Int] -> M.Map Int [Int] -> [Int]
+    sieve' :: [Int] -> M.IntMap [Int] -> [Int]
 ```
 
-And in that `Map`, we store a list of prime factors of that number.
+And in that `IntMap`, we store a list of prime factors of that number.
 We use these as "iterators". So when we get to a number `n`,
 if `n` has a list of primes associated with them, insert each
 prime `p` at `p + n` in the map and don't add `n` to our list.
@@ -40,7 +40,7 @@ In Haskell code
       case M.lookup n m of
         Nothing -> n : sieve' ns (M.insertWith (++) (2 * n) [n] m)
         Just ps -> sieve' ns $ foldl' insertPrime (M.delete n m) ps
-      where insertPrime m p = M.insert (n + p) p
+      where insertPrime m p = M.insertWith (++) (n + p) [p] m
 ```
 
 And then to drive this, we can just use
@@ -49,7 +49,7 @@ And then to drive this, we can just use
     sieve :: [Int]
     sieve = sieve' [2..] M.empty
 
-    main = sum . takeWhile (<2000000) $ sieves
+    main = sum . takeWhile (<2000000) $ sieve
 ```
 
 And there you have it. This code is certainly cleaner than the `ST` version and decently
