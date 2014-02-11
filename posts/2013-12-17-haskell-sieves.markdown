@@ -53,7 +53,7 @@ And then to drive this, we can just use
 ```
 
 And there you have it. This code is certainly cleaner than the `ST` version and decently
-performant, clocking in at 3 seconds. This is a little unfair to this version though
+performant, clocking in at 1.5 seconds. This is a little unfair to this version though
 since the `ST` code takes advantage of unboxed types which isn't possible here. Additionally,
 this version is strictly more general, creating an infinite list rather than a finite one.
 
