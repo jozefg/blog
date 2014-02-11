@@ -24,7 +24,7 @@ We have functions at the type level, consider
      cons a b = (a, b)
 ```
 
-Clearly `Cons` is the type level equivalent of `cons`. But how
+`Cons` looks like the type level equivalent of `cons`. But how
 do we ensure that these actually work? What if we wrote
 
 ``` haskell
@@ -32,7 +32,7 @@ do we ensure that these actually work? What if we wrote
     foo = ???
 ```
 
-Clearly this makes no sense, there is no value whose type is `Maybe`.
+This makes no sense however, there is no value whose type is `Maybe`.
 
 This hints that we want something corresponding to a type system at the type level.
 Something to ensure that all the types we write make some sort of sense. For example,
@@ -59,20 +59,20 @@ even notates the kind of types that values occupy as `*` as well. We can read so
 version of higher order functions.
 
 Now the step is to ask, what's the "type" of a kind? `* :: ???` the answer
-is, a *sort*. However, Haskell doesn't really talk much of sorts and only has one,
-`BOX`. We can think of things at the kind level having a sort, for example `* :: BOX`,
-but we can't actually state this in Haskell. This means that while the sorts *exist*, we
-can't really do much of anything with them. Perhaps in the future Haskell will grow
-a few more extensions to enable more sophisticated sorts, until then though, we'll
-focus on kinds.
+is, a *sort*. However, Haskell doesn't talk  of sorts and conceptually only has one,
+`BOX`. It is occasionally helpful to think as if `BOX` existed,
+but we can't actually state this in Haskell. This means that while the sorts
+*conceptually exist*, we can't really do much of anything with them.
+Perhaps in the future Haskell will grow a few more extensions to enable
+talking about sorts, until then though, we'll focus on kinds.
 
 Now back to kinds, what does Haskell have in terms of a kind system
 
  - By default, we have two kind constructors, `(->) :: BOX -> BOX -> BOX` and `* :: BOX`.
  - With `-XKindSignatures` we can actually utter kinds, eg `a :: *`.
- - With `-XDataKinds` we can define our own kinds just like we types.
+ - With `-XDataKinds` we can define our own kinds just like we can with types.
  - With `-XTypeFamilies` we can write type level functions.
- - With `-PolyKinds` we have parametric polymophism at the kind level.
+ - With `-XPolyKinds` we have parametric polymorphism at the kind level.
 
 ### Data Kinds
 The motiviation for `DataKind`s is that Haskell's vanilla kind system is
@@ -107,8 +107,11 @@ nonsense like
     crazy = undefined
 ```
 
-The problem here is that the kind of `Tree` is `* -> * -> *`. Clearly we
+The problem here is that the kind of `Tree` is `* -> * -> *`. We
 don't really mean that a tree be colored by any type of kind `*`!
+We really want to limit it so that we can only color a tree with `Red`
+and `Black`.
+
 
 Enter `DataKinds`
 
@@ -171,4 +174,4 @@ these let you express some very sophisticated programs at the type level in Hask
 If this really tickles your fancy, perhaps make the leap to Agda, Idris, or Coq to enjoy
 full dependent types.
 
-*Thanks to GlenH7 and JimmyHoffa on thewhiteboard for proof reading*
+*Thanks to GlenH7 and JimmyHoffa on thewhiteboard and byorgey on #haskell for proof reading*
