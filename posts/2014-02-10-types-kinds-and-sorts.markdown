@@ -21,9 +21,10 @@ We have functions at the type level, consider
 
 ``` haskell
      type Cons a b = (a, b)
+     cons a b = (a, b)
 ```
 
-Clearly these corresponds to `(,)` at the type level. But how
+Clearly `Cons` is the type level equivalent of `cons`. But how
 do we ensure that these actually work? What if we wrote
 
 ``` haskell
@@ -31,7 +32,7 @@ do we ensure that these actually work? What if we wrote
     foo = ???
 ```
 
-Clearly this makes now sense, there is no value whose type is `Maybe`.
+Clearly this makes no sense, there is no value whose type is `Maybe`.
 
 This hints that we want something corresponding to a type system at the type level.
 Something to ensure that all the types we write make some sort of sense. For example,
@@ -159,3 +160,8 @@ Now if we attempted to create an unbalanced tree
 We get a type error! Hopefully this clears up what kinds
 are and how we can leverage them to statically check some properties of
 our programs.
+
+For the curious reader I encourage you to look at `PolyKinds` and `TypeFamilies`,
+these let you express some very sophisticated programs at the type level in Haskell.
+If this really tickles your fancy, perhaps make the leap to Agda, Idris, or Coq and enjoy
+full dependent types.
