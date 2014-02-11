@@ -20,11 +20,10 @@ to the types themselves.
 We have functions at the type level, consider
 
 ``` haskell
-     type Cons a b = (a, b)
-     cons a b = (a, b)
+    data Cons a b = Pair a b
 ```
 
-`Cons` looks like the type level equivalent of `cons`. But how
+`Cons` looks like the type level equivalent of `Pair`. But how
 do we ensure that these actually work? What if we wrote
 
 ``` haskell
@@ -38,7 +37,7 @@ This hints that we want something corresponding to a type system at the type lev
 Something to ensure that all the types we write make some sort of sense. For example,
 let's call the "type" of types things values occupy, `*`. So `Int :: *`,
 as well as `String`, `[a]`, and many others. Now it seems that `Cons` takes in two types,
-`a :: *` and `b :: *`, and returns another type, `(a, b) :: *`. This is notated `* -> * -> *`.
+`a :: *` and `b :: *`, and returns another type, `Cons a b :: *`. This is notated `* -> * -> *`.
 
 Now let's rattle off some other examples
 
@@ -68,7 +67,7 @@ talking about sorts, until then though, we'll focus on kinds.
 
 Now back to kinds, what does Haskell have in terms of a kind system
 
- - By default, we have two kind constructors, `(->) :: BOX -> BOX -> BOX` and `* :: BOX`.
+ - By default, we have two kind constructors, `(->)` and `*`.
  - With `-XKindSignatures` we can actually utter kinds, eg `a :: *`.
  - With `-XDataKinds` we can define our own kinds just like we can with types.
  - With `-XTypeFamilies` we can write type level functions.
@@ -93,7 +92,7 @@ about GADTs if necessary.
     data Tree :: * -> * -> * where
       Leaf  :: Tree a Black
       NodeR :: a -> Tree a Black -> Tree a Black -> Tree a Red
-      NodeB :: a -> Tree a c     -> Tree a c     -> Tree a Black
+      NodeB :: a -> Tree a c     -> Tree a c'    -> Tree a Black
 ```
 
 Here we're attempting to model the fact that in a red-black binary tree,
@@ -123,7 +122,7 @@ Enter `DataKinds`
     data Tree :: * -> Color -> * where
       Leaf  :: Tree a Black
       NodeR :: a -> Tree a Black -> Tree a Black -> Tree a Red
-      NodeB :: a -> Tree a c     -> Tree a c     -> Tree a Black
+      NodeB :: a -> Tree a c     -> Tree a c'    -> Tree a Black
 ```
 
 Now if we attempted
@@ -151,7 +150,7 @@ Now we can integrate these into our tree.
     data Tree :: * -> Color -> Nat -> * where
       Leaf  :: Tree a Black Z
       NodeR :: a -> Tree a Black n -> Tree a Black n -> Tree a Red   n
-      NodeB :: a -> Tree a c n     -> Tree a c n     -> Tree a Black (S n)
+      NodeB :: a -> Tree a c n     -> Tree a c' n    -> Tree a Black (S n)
 ```
 
 Taking a moment to examine this, we see that a `Leaf` has 0 black nodes below it,
