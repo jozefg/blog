@@ -6,8 +6,8 @@ One subject that most introductory Haskell books fail to address is kinds.
 This means that when most intermediate Haskellers start looking at Haskell
 extensions they're flummoxed by `DataKinds`.
 
-This posts aims to introduce people like this to what kinds and sorts are
-and how they enter into the world of Haskell programming.
+This post aims to introduce intermediate haskellers to kinds and sorts
+as well as how they enter into the world of Haskell programming.
 
 Think about an expression in Haskell, if it's well formed, then we can
 assign it a type: `1 :: Int`, `"foo" :: String`, and `Just () :: Maybe ()`
@@ -36,29 +36,35 @@ Clearly this makes no sense, there is no value whose type is `Maybe`.
 
 This hints that we want something corresponding to a type system at the type level.
 Something to ensure that all the types we write make some sort of sense. For example,
-let's call the "type" of things values occupy, like `Int`, `String`, and `Maybe ()`, `*`.
-So `Int :: *`. Now it seems that `Cons :: * -> * -> *`, or that `Cons` takes in two types,
-`a` and `b`, and returns another type, `(a, b)`.
+let's call the "type" of types things values occupy, `*`. So `Int :: *`,
+as well as `String`, `[a]`, and many others. Now it seems that `Cons` takes in two types,
+`a :: *` and `b :: *`, and returns another type, `(a, b) :: *`. This is notated `* -> * -> *`.
 
 Now let's rattle off some other examples
 
 ``` haskell
-    Maybe  :: * -> *
-    Either :: * -> * -> *
+    Maybe  :: * -> *      -- Maybe takes a type and returns another
+    Either :: * -> * -> * -- Either takes two types and returns another
     StateT :: (* -> *) -> * -> *
 ```
 
 Notice that there's something interesting about `StateT`, it takes a *function* of
-type onto type. It's a type level parallel of a higher order functions!
+type onto type. It's a type level parallel of a higher order function!
 
 This is what *kinds* are all about, kinds are the type of types! Indeed, Haskell
 even notates the kind of types that values occupy as `*` as well. We can read something like
-`Int :: *` as *`Int` has the kind `*`*.  `StateT` is what's called a
-higher *kinded* type, it's the type level version of higher order functions.
+`Int :: *` as *`Int` has the kind `*`*.
 
-Now the obvious step is to ask, what's the "type" of a kind? `* :: ???` the answer
+`StateT` is what's called a higher *kinded* type, it's the type level
+version of higher order functions.
+
+Now the step is to ask, what's the "type" of a kind? `* :: ???` the answer
 is, a *sort*. However, Haskell doesn't really talk much of sorts and only has one,
-`BOX`. Because of this, we shall not speak much more of sorts.
+`BOX`. We can think of things at the kind level having a sort, for example `* :: BOX`,
+but we can't actually state this in Haskell. This means that while the sorts *exist*, we
+can't really do much of anything with them. Perhaps in the future Haskell will grow
+a few more extensions to enable more sophisticated sorts, until then though, we'll
+focus on kinds.
 
 Now back to kinds, what does Haskell have in terms of a kind system
 
@@ -68,16 +74,14 @@ Now back to kinds, what does Haskell have in terms of a kind system
  - With `-XTypeFamilies` we can write type level functions.
  - With `-PolyKinds` we have parametric polymophism at the kind level.
 
-Breaking this down piece by pice
-
 ### Data Kinds
-For the rest of the post I'll focus on showing how `DataKind`s meshes with Haskell's
-kind system. The motiviation for `DataKind`s is that Haskell's vanilla kind system is
+The motiviation for `DataKind`s is that Haskell's vanilla kind system is
 well... boring. It doesn't really help us since we can't write our own kinds and
 types to occupy these kinds.
 
-Let's take a simple example using GADTs, for the sake of bloat I'll leave
-it up to the reader to go learn about GADTs if necessary.
+Let's take a simple example using GADTs. For the sake of brevity
+I'll leave the reader to take a moment and [learn](http://www.haskell.org/haskellwiki/GADTs_for_dummies)
+about GADTs if necessary.
 
 ``` haskell
     {-# LANGUAGE KindSignatures, GADTs, EmptyDataDecls #-}
@@ -133,7 +137,7 @@ Let's attempt to encode a more complex property, that there are exactly the same
 of black nodes below every node. To start we'll need a type level encoding of numbers
 
 ``` haskell
-
+data Nat = Z | S Nat
 ```
 
 These are called peano numbers, `Z` is zero and `S` is equivalent to `+1`, so 2 is `S (S Z)`.
@@ -147,7 +151,7 @@ Now we can integrate these into our tree.
       NodeB :: a -> Tree a c n     -> Tree a c n     -> Tree a Black (S n)
 ```
 
-Taking a moment to examine this, we see that `Leaf`'s have a `Z` nodes below them,
+Taking a moment to examine this, we see that a `Leaf` has 0 black nodes below it,
 which makes perfect sense. Then nodes take two trees of identical height and either
 adds one to the height if the node is black or leaves it the same.
 
@@ -157,11 +161,14 @@ Now if we attempted to create an unbalanced tree
     unbalanced = NodeB () Leaf (NodeB () Leaf Leaf)
 ```
 
-We get a type error! Hopefully this clears up what kinds
-are and how we can leverage them to statically check some properties of
-our programs.
+We get a type error!
+
+Hopefully this clears up what kinds are and how we can leverage them to
+statically check some properties of our programs.
 
 For the curious reader I encourage you to look at `PolyKinds` and `TypeFamilies`,
 these let you express some very sophisticated programs at the type level in Haskell.
-If this really tickles your fancy, perhaps make the leap to Agda, Idris, or Coq and enjoy
+If this really tickles your fancy, perhaps make the leap to Agda, Idris, or Coq to enjoy
 full dependent types.
+
+*Thanks to GlenH7 and JimmyHoffa on thewhiteboard for proof reading*
