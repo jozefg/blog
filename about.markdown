@@ -20,4 +20,10 @@ verified compilers.
 I've been juggling since 3rd grade. Nowadays I am a member of the
 Ultimate Club and a volunteer at Jugheads Youth Juggling Company.
 
+## Find Me
+I'm active on a few sites, usually under the handle jozefg.
+<a href="http://stackoverflow.com/users/784338/jozefg">
+<img src="http://stackoverflow.com/users/flair/784338.png" width="208" height="58" alt="profile for jozefg at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for jozefg at Stack Overflow, Q&amp;A for professional and enthusiast programmers">
+</a>
 
+[@jozefg28](https://twitter.com/jozefg28)

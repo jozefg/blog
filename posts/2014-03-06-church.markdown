@@ -1,0 +1,225 @@
+---
+title: Church Representations
+---
+
+A project I've been playing with lately is generalizing `maybe`.
+Now on the surface that sounds well.. boring. But there's actually
+some interesting concepts buried in here.
+
+## Lambda The Almighty
+Let's start by specifying what I mean when I say "generalize".
+When we look at `maybe`, the type gives us a pretty strong
+clue on how to implement it
+
+``` haskell
+    maybe :: b -> (a -> b) -> Maybe a -> a
+    maybe nothingCase justCase Nothing  = nothingCase
+    maybe nothingCase justCase (Just a) = justCase a
+```
+
+Each argument of corresponds to a different case of
+the sumtype `Maybe`.
+
+There's actually a name for this idea, it's encoding
+a data type within functions: Church Encodings.
+
+Let's rattle of some examples:
+
+Tuples
+
+``` haskell
+    {-# LANGUAGE RankNTypes #-}
+    -- We'll call a tuple a Product because it
+    -- looks like the cartesion *product* of two types
+    type Product a b = forall c. (a -> b -> c) -> c
+    pair :: a -> b -> Pair a b
+    pair a b = \destruct -> destruct a b
+
+    -- We can easily make fst and snd
+    fst :: Pair a b -> a
+    fst p = p $ \a b -> a
+    snd :: Pair a b -> b
+    snd p = p $ \a b -> b
+```
+
+We can do `Either` as well
+
+``` haskell
+    -- We'll call Either a "sum" because it
+    -- looks like the disjoint union (sum) of two types
+    type Sum a b = forall c. (a -> c) -> (b -> c) -> c
+    inl :: a -> Sum a b
+    inl a = \l r -> l a
+
+    inr :: b -> Sum a b
+    inr b = \l r -> r b
+```
+
+Look familiar? That's just `Data.Either.either`!
+Now if we squint at these we can imagine building up
+more complex types from these building blocks
+
+``` haskell
+    data AFew = NoVal | OneVal Int | ThrVal Int Bool String
+
+    type ChurchAFew =
+      Sum () (Sum Int (Prod Int (Prod Bool String)))
+
+    noVal :: ChurchAFew
+    noVal = inl ()
+
+    oneVal :: Int -> ChurchAFew
+    oneVal i = inr (inl i)
+
+    thrVal :: Int -> Bool -> String -> ChurchAFew
+    thrVal i b s = inr . inr . pair i $ pair b s
+```
+And now pattern matching more or less falls out for free from
+`ChurchAFew`. Since it's a function we transform
+
+``` haskell
+    case foo of
+      NoVal        -> ...
+      OneVal i     -> ...
+      ThrVal i b s -> ...
+    -- becomes
+    foo (\() -> ...) (\i -> ...) (\i b s -> ...)
+```
+
+Such is the power of lambda! And there are all sorts
+of fun side effects of pattern matching being a function,
+most of it to do with nicer composition with point-free functions.
+
+## But It's Boring!
+
+There's a drawback here, boilerplate! We have to essentially
+duplicate all our data declarations, extra boilerplate for generating
+accessors, and then two functions to map back and forth between
+our representations.
+
+As a programmer I'm far too lazy to write all that!
+
+Whenever we start to think of terms of sum and product types
+it's time to turn to GHC.Generics. It's a library that provides
+a type class to reify our normal types into explicit sums
+and products and back again.
+
+The first thing we have to do is write a type level function
+to reify a GHC.Generics representation to the appropriate type.
+
+For example `Maybe Int` has the following representation
+
+``` haskell
+    M1
+        D
+        GHC.Generics.D1Maybe
+        (M1 C GHC.Generics.C1_0Maybe U1
+         :+: M1 C GHC.Generics.C1_1Maybe (M1 S NoSelector (K1 R Int)))
+```
+
+We can strip out all the `M1` meta information since we don't really care leaving
+
+``` haskell
+    U1 :+: K1 R Int
+```
+
+Not so bad! Let's start by writing a type level function (type family)
+to get rid the `M1` constructors
+
+``` haskell
+    {-# LANGUAGE TypeFamilies, TypeOperators, UndecidableInstances, RankNTypes #-}
+
+    import GHC.Generics
+
+    -- | Remove the extra `p` parameter that GHC.Generics
+    -- lugs through every constructor
+    type family WithoutParam v :: * -> *
+    type instance WithoutParam ((:+:) l r p) = l :+: r
+    type instance WithoutParam ((:*:) l r p) = l :*: r
+    type instance WithoutParam (U1 p)        = U1
+    type instance WithoutParam (K1 a t p)    = K1 a t
+
+    -- | Strip out `M1` tags
+    type family StripMeta v :: *
+    type instance StripMeta (M1 a b f p)  = StripMeta (f p)
+    type instance StripMeta (K1 a t p)    = K1 a t p
+    type instance StripMeta ((:+:) l r p) =
+      (:+:) (WithoutParam (StripMeta (l p))) (WithoutParam (StripMeta (r p))) p
+    type instance StripMeta ((:*:) l r p) =
+      (:*:) (WithoutParam (StripMeta (l p))) (WithoutParam (StripMeta (r p))) p
+    type instance StripMeta (U1 p)        = U1 p
+
+```
+
+As we can see these type families are well.. pretty terrible. But they work!
+Next we can actually do some real work. We need to take a product type with
+one or more members and turn it into a function.
+
+``` haskell
+    type family ChurchProd v c :: *
+    type instance ChurchProd (K1 a t p) c    = t -> c
+    type instance ChurchProd (U1 p)     c    = () -> c
+    type instance ChurchProd ((:*:) l r p) c =
+      ChurchProd (l p) (ChurchProd (r p) c)
+```
+
+So here we have a type family with two parameters, the term and the "out" type.
+These take `a :*: b :*: c` to `a -> b -> c -> ...`. This is important because
+GHC.Generics represents things like a list where the `(:)` equivalent is `:+:`
+and the each leaf is product or unit type.
+
+Now at least we can run
+
+    > :kind! ChurchProd (StripMeta (Rep (Int, Bool) ())) Char
+    ChurchProd (StripMeta (Rep (Int, Bool) ())) Char :: *
+    = Int -> Bool -> Char
+
+
+As it happens, I told a small fib, GHC.Generics doesn't make
+quite a list. In fact it makes a tree! We can rejigger things
+to a list though
+
+``` haskell
+    data ListTerm p -- The list terminator
+    
+    type family ToList v rest :: *
+    type instance ToList ((:+:) l r' p) r = ToList (l p) (ToList (r' p) r)
+    type instance ToList (K1 a t p)     r = (K1 a t     :+: WithoutParam r) p
+    type instance ToList ((:*:) l r' p) r = ((l :*: r') :+: WithoutParam r) p
+    type instance ToList (U1 p)         r = (U1         :+: WithoutParam r) p
+```
+
+Now the final piece, we need to write a function which "folds" over a tree of
+`:+:` and produces a function `(a -> c) -> (b -> c) -> ... -> c`
+
+``` haskell
+    type family ChurchSum v c :: *
+    type instance ChurchSum ((:+:) l r p) c =
+      ChurchProd (l p) c -> ChurchSum (r p) c
+    type instance ChurchSum (ListTerm p) c = c
+
+
+    -- A driver type for the whole thing
+    type Church t = forall c. ChurchSum (ToList (StripMeta (Rep t ())) (ListTerm ())) c
+```
+
+
+And there we go! As a quick test
+
+``` haskell
+    {-# LANGUAGE DeriveGeneric #-}
+    data AFew = S1 Int Int Int | S2 Bool Char | S3 String | S4
+              deriving Generic
+```
+
+And now
+
+    > kind! Church AFew
+    (Int -> Int -> Int -> c)
+      -> (Bool -> Char -> c)
+      -> ([Char] -> c)
+      -> (() -> c)
+      -> c
+
+Tada! Now we've automated the generation of types for church representations.
+In the next post we'll actually go about populating them.
