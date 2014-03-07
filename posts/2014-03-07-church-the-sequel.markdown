@@ -139,7 +139,8 @@ Now, finally, `GChurchSum`
 ``` haskell
     class GChurchSum a r where
       elim :: Proxy r -> a -> ChurchSum a r -- Proxy because type inference is stubborn
-    instance (GChurchProd (l p), GChurchSum (r' p) r, Swallow (r' p)) => GChurchSum ((:+:) l r' p) r where
+    instance (GChurchProd (l p), GChurchSum (r' p) r, Swallow (r' p)) =>
+             GChurchSum ((:+:) l r' p) r where
       elim p sum@(L1 l) = \f -> swallow (right sum) (prod p l f)
         where right :: forall l r p. (:+:) l r p -> Proxy (r p)
               right _ = Proxy
