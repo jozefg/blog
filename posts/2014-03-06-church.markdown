@@ -18,10 +18,10 @@ clue on how to implement it
 ```
 
 Each argument of corresponds to a different case of
-the sumtype `Maybe`.
+the sum type `Maybe`.
 
 There's actually a name for this idea, it's encoding
-a data type within functions: Church Encodings.
+a data type within functions: Church Encoding.
 
 Let's rattle of some examples:
 
@@ -74,6 +74,7 @@ more complex types from these building blocks
     thrVal :: Int -> Bool -> String -> ChurchAFew
     thrVal i b s = inr . inr . pair i $ pair b s
 ```
+
 And now pattern matching more or less falls out for free from
 `ChurchAFew`. Since it's a function we transform
 
@@ -194,8 +195,7 @@ Now the final piece, we need to write a function which "folds" over a tree of
 
 ``` haskell
     type family ChurchSum v c :: *
-    type instance ChurchSum ((:+:) l r p) c =
-      ChurchProd (l p) c -> ChurchSum (r p) c
+    type instance ChurchSum ((:+:) l r p) c = ChurchProd (l p) c -> ChurchSum (r p) c
     type instance ChurchSum (ListTerm p) c = c
 
 
