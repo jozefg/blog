@@ -103,7 +103,34 @@ Notice that we have to a few hoops using `lNot` and `rNot`. Otherwise GHC will c
 that type classes aren't injective and it's not sure how to handle `Nothing :: Maybe a`.
 However, a bit of explicit hand holding takes care of this.
 
-Our next two typeclasses, while difficult to come up with, are actually pretty simple!
+For our next type class hacking we need to actually add one type family
+that I forgot in our last post.
+
+``` haskell
+    type family ToListProd v rest
+    type instance ToListProd ((:*:) l r' p) r = ToListProd (l p) (ToListProd (r' p) r)
+    type instance ToListProd (K1 a t p)     r = (K1 a t     :*: WithoutParam r) p
+    type instance ToListProd (U1 p)         r = (U1         :*: WithoutParam r) p
+```
+
+This is isomorphic to `ToList` but instead of restructuring `:+:`'s, it moves around
+`:*:`'s. The corresponding type class for this almost identical to `GList`
+
+``` haskell
+    class GListProd a r where
+      toListProd :: a -> r -> ToListProd a r
+    instance (WithoutParam r) p ~ r => GListProd (U1 p) r where
+      toListProd = (:*:)
+    instance (WithoutParam r) p ~ r => GListProd (K1 a t p) r where
+      toListProd = (:*:)
+    instance (GListProd (l p) (ToListProd (r' p) r), GListProd (r' p) r) => GListProd ((:*:) l r' p) r where
+      toListProd (l :*: r) rest = toListProd l (toListProd r rest)
+```
+
+The only notable difference here is that we don't have a `Maybe a` since with products both
+sides our present. This makes the whole thing much simpler.
+
+No we're ready to proceed to the actual transformation type classes.
 
 ``` haskell
     class GChurchProd a where
@@ -139,15 +166,17 @@ Now, finally, `GChurchSum`
 ``` haskell
     class GChurchSum a r where
       elim :: Proxy r -> a -> ChurchSum a r -- Proxy because type inference is stubborn
-    instance (GChurchProd (l p), GChurchSum (r' p) r, Swallow (r' p)) =>
+    
+    instance (GListProd (l p) (ListTerm ()), GChurchProd (ToListProd (l p) (ListTerm ())),
+              GChurchSum (r' p) r, Swallow (r' p)) =>
              GChurchSum ((:+:) l r' p) r where
-      elim p sum@(L1 l) = \f -> swallow (right sum) (prod p l f)
+      elim p sum@(L1 l) = \f ->
+        swallow (right sum) (prod p (toListProd l (ListTerm :: ListTerm ())) f)
         where right :: forall l r p. (:+:) l r p -> Proxy (r p)
               right _ = Proxy
       elim p (R1 r) = \_ -> elim p r
     instance GChurchSum (ListTerm p) r where
       elim _ _ = error "Malformed generic instance"
-
 ```
 
 Now the `elim` instance for `ListTerm` can never be called, this is
@@ -156,7 +185,9 @@ state prior to `ToList`, we'll never end up with `ListTerm`.
 
 Otherwise if we get an `L1` then we're at the actual value
 our sum type is in so we produce an `r` and swallow the rest
-of our arguments, otherwise we ignore the irrelevant eliminator
+of our arguments, notice that this is where we actual
+transform a leaf into a `ToListProd` and this is reflected in
+our constraints. Otherwise we ignore the irrelevant eliminator
 and recurse!
 
 To put it all together
@@ -189,3 +220,4 @@ The `True` corresponds to the `[]` list case and the function
 represents `(:)`. The current `True (\_ _ -> False)` actually
 computes `null`.
 
+*Edit, added GListProd*
