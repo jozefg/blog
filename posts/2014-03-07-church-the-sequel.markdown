@@ -123,7 +123,8 @@ This is isomorphic to `ToList` but instead of restructuring `:+:`'s, it moves ar
       toListProd = (:*:)
     instance (WithoutParam r) p ~ r => GListProd (K1 a t p) r where
       toListProd = (:*:)
-    instance (GListProd (l p) (ToListProd (r' p) r), GListProd (r' p) r) => GListProd ((:*:) l r' p) r where
+    instance (GListProd (l p) (ToListProd (r' p) r), GListProd (r' p) r) =>
+             GListProd ((:*:) l r' p) r where
       toListProd (l :*: r) rest = toListProd l (toListProd r rest)
 ```
 
