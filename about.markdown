@@ -13,7 +13,7 @@ My name is Danny Gratzer, I am a high school student in the US.
 I like functional programming. Specifically, I write lots of compilers
 and type checkers in Haskell and Lisp (Common Lisp, Scheme). 
 
-I also like formal verification and work with PLV at CSAIL developing
+I also like formal verification and worked with PLV at CSAIL developing
 verified compilers.
 
 ## Juggling
