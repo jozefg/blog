@@ -121,7 +121,8 @@ previous paths as `all`. Similarly, we can also reconstruct the original type gi
       (WithoutParam (ReconstructPath rest) :+: WithoutParam r) p
     type instance ReconstructPath (InR l p  ': rest) =
       (WithoutParam l :+: WithoutParam (ReconstructPath rest)) p
-    type instance ReconstructPath (Meta a b p ': rest) = M1 a b (WithoutParam (ReconstructPath rest)) p
+    type instance ReconstructPath (Meta a b p ': rest) =
+      M1 a b (WithoutParam (ReconstructPath rest)) p
     type instance ReconstructPath (Term a     ': '[])  = a
 ```
 
@@ -296,7 +297,10 @@ And now we're almost done! We can wrap all of this up into
 one function
 
 ``` haskell
-    fromChurch :: forall a. (Generic a, (GBuild (MakePaths (Rep a ()) '[] '[]) (Church a (Rep a ())) (Rep a ())))
+    fromChurch :: forall a. (Generic a,
+                       GBuild (MakePaths (Rep a ()) '[] '[])
+                              (Church a (Rep a ()))
+                              (Rep a ()))
                   => Church a (Rep a ()) -> a
     fromChurch c = to $ (build p c :: Rep a ())
       where p :: Proxy (MakePaths (Rep a ()) '[] '[])
