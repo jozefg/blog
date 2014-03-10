@@ -110,7 +110,7 @@ that I forgot in our last post.
     type family ToListProd v rest
     type instance ToListProd ((:*:) l r' p) r = ToListProd (l p) (ToListProd (r' p) r)
     type instance ToListProd (K1 a t p)     r = (K1 a t     :*: WithoutParam r) p
-    type instance ToListProd (U1 p)         r = (U1         :*: WithoutParam r) p
+    type instance ToListProd (U1 p)         r = U1 p -- since U1 is never in `:*:`'s.
 ```
 
 This is isomorphic to `ToList` but instead of restructuring `:+:`'s, it moves around
@@ -120,7 +120,7 @@ This is isomorphic to `ToList` but instead of restructuring `:+:`'s, it moves ar
     class GListProd a r where
       toListProd :: a -> r -> ToListProd a r
     instance (WithoutParam r) p ~ r => GListProd (U1 p) r where
-      toListProd = (:*:)
+      toListProd = const -- Throw away the rest which must be ListTerm
     instance (WithoutParam r) p ~ r => GListProd (K1 a t p) r where
       toListProd = (:*:)
     instance (GListProd (l p) (ToListProd (r' p) r), GListProd (r' p) r) =>
