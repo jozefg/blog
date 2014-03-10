@@ -2,7 +2,7 @@
 title: Church Representations: Part 3
 ---
 
-To conclude my resent spat of posts on [church](/posts/2014-03-06-church.html)
+To conclude my recent spat of posts on [church](/posts/2014-03-06-church.html)
 [representations](/posts/2014-03-07-church-the-sequel.html) I'd like to write one
 more.
 
