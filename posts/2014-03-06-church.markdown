@@ -12,7 +12,7 @@ When we look at `maybe`, the type gives us a pretty strong
 clue on how to implement it
 
 ``` haskell
-    maybe :: b -> (a -> b) -> Maybe a -> a
+    maybe :: b -> (a -> b) -> Maybe a -> b
     maybe nothingCase justCase Nothing  = nothingCase
     maybe nothingCase justCase (Just a) = justCase a
 ```
@@ -32,13 +32,13 @@ Tuples
     -- We'll call a tuple a Product because it
     -- looks like the cartesion *product* of two types
     type Product a b = forall c. (a -> b -> c) -> c
-    pair :: a -> b -> Pair a b
+    pair :: a -> b -> Product a b
     pair a b = \destruct -> destruct a b
 
     -- We can easily make fst and snd
-    fst :: Pair a b -> a
+    fst :: Product a b -> a
     fst p = p $ \a b -> a
-    snd :: Pair a b -> b
+    snd :: Product a b -> b
     snd p = p $ \a b -> b
 ```
 
