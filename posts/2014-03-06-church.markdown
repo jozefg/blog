@@ -84,7 +84,7 @@ And now pattern matching more or less falls out for free from
       OneVal i     -> ...
       ThrVal i b s -> ...
     -- becomes
-    foo (\() -> ...) (\i -> ...) (\i b s -> ...)
+    foo (\() -> ...) (\p -> p (\i -> ...) (\p1 -> p1 (\i p2 -> ...)))
 ```
 
 Such is the power of lambda! And there are all sorts
