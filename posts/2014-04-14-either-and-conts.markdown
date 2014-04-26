@@ -78,6 +78,42 @@ Notice the clever bit here, each handler actually contains both the
 success and failure continuations! If we can't handle the exception we
 fail otherwise we can resume exactly where we were before.
 
+No post would be complete without a demonstration!
+
+``` haskell
+    data Ex = Boom | Kaboom | Splat String
+            deriving Show
+    
+    throwEx1 = throw Boom
+    throwEx2 = throw Kaboom
+    throwEx3 = throw (Splat "splat")
+    test = do
+      result <- handle throwEx1 $ \e -> case e of
+        Boom -> Just "foo"
+        _    -> Nothing
+      result2 <- handle throwEx2 $ \e -> case e of
+        Boom   -> Just "what"
+        Kaboom -> Just "huh?"
+        _      -> Nothing
+      result3 <- handle throwEx3 $ \e -> case e of
+        Splat s -> Just s
+        _       -> Nothing
+      return (unwords [result, result2, result3])
+```
+
+We can run this with
+
+``` haskell
+    runThrows (error . ("Toplevel fail "++)) test
+```
+
+which returns
+
+``` haskell
+    "foo huh? splat"
+```
+
+So our exceptions do in fact, work :)
 ## A Note on `Either`
 Now we already have a perfectly good system of monadic exception like
 thing in the form of `Either`.
