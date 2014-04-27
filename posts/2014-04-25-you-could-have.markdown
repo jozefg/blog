@@ -3,7 +3,7 @@ title: You Could Have Invented GHC.Generics
 ---
 
 In Haskell right now there seem to be two main approaches to data-generic
-approaches. There's the whole `Typeable`/`Data` approaches which is a bit
+programming. There's the whole `Typeable`/`Data` approaches which is a bit
 magic. Lately however, there's been a new kid on the block, GHC.Generics.
 
 In this post we'll step through the intuition for the library and (hopefully)
