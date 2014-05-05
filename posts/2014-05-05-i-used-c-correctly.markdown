@@ -14,7 +14,7 @@ I'm usually compiling a functional language where tail call optimization is
 imperative (heh) and C makes this a lot harder than it should.
 
 This post illustrates how I currently beat C into actually generating proper
-tail calls. Most of the code from this post is straight from [scheme2c](bitbucket.org/jozefg/scheme2c). If
+tail calls. Most of the code from this post is straight from [scheme2c](http://www.bitbucket.org/jozefg/scheme2c). If
 you're having trouble understanding some function than there may actually be documentation for
 it in the source :)
 
