@@ -14,7 +14,7 @@ I'm usually compiling a functional language where tail call optimization is
 imperative (heh) and C makes this a lot harder than it should.
 
 This post illustrates how I currently beat C into actually generating proper
-tail calls. Most of the code from this post is straight from [scheme2c](http://www.bitbucket.org/jozefg/scheme2c). If
+tail calls. Most of the code from this post is straight from [c_of_scheme](http://www.bitbucket.org/jozefg/c_of_scheme). If
 you're having trouble understanding some function than there may actually be documentation for
 it in the source :)
 
@@ -131,7 +131,7 @@ It looks like this
 
 All this does is initialize `stack_frames` and call `scm_apply`. We can modify
 the codegen so that the `main` function is passed to `scm_init`. We know that
-this main function will take no arguments in `scheme2c` for reasons that aren't entirely
+this main function will take no arguments in `c_of_scheme` for reasons that aren't entirely
 relevant to this post.
 
 OK, so now is the magic and like all good C magic, it starts by including `setjmp`.
