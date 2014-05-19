@@ -266,14 +266,31 @@ our AST? Well, time to break out recursion-schemes
                 | App a a
                 | Var String
     type instance Base Foo = FooB
+
+    instance Foldable Foo where
+      project (Num a)        = NumB a
+      project (String a)     = StringB a
+      project (Binop op a b) = BinopB op a b
+      project (Fun v a)      = FunB v a
+      project (App a b)      = AppB a b
+      project (Var a)        = VarB a
+
+    -- reverse of project
+    rProject :: Base Foo Foo -> Foo
+    rProject (NumB a)        = Num a
+    rProject (StringB a)     = String a
+    rProject (BinopB op a b) = Binop op a b
+    rProject (FunB v a)      = Fun v a
+    rProject (AppB a b)      = App a b
+    rProject (VarB a)        = Var a
 ```
 
 And let's rewrite `reduce` to use `FooB` instead of `Foo`
 
 ``` haskell
     reduce :: Base Foo Foo -> Foo
-    reduce (Fix (Binop op (Num a) (Num b))) = Num $ compute op a b -- The reduction
-    reduce a                                = a
+    reduce (Fix (BinopB op (Num a) (Num b))) = Num $ compute op a b -- The reduction
+    reduce a                                 = rProject a
 ```
 
 So this entire traversal now just becomes
