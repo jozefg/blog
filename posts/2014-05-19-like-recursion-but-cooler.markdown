@@ -35,10 +35,10 @@ in this way since it covers a surprisingly large cover of cases
 
 ``` haskell
     map :: (a -> b) -> [a] -> [b]
-    map f = foldr ((:) . f)
+    map f = foldr ((:) . f) []
 
     filter :: (a -> Bool) -> [a] -> [a]
-    filter p = foldr (\x rest -> if p x then x : rest else rest)
+    filter p = foldr (\x rest -> if p x then x : rest else rest) []
 ```
 
 Turns out you can implement quite a lot of Data.List with `foldr`
@@ -305,7 +305,7 @@ Now we can test our simple optimization
 ``` haskell
     test = Binop Plus (Num 1) (Binop Mult (Num 2) (Num 3))
     optimized = constFold test
-    main = print test
+    main = print optimized
 ```
 
 As we'd hope, this prints out `Num 7`!

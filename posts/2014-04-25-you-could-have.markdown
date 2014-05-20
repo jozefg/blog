@@ -4,7 +4,7 @@ title: You Could Have Invented GHC.Generics
 
 In Haskell right now there seem to be two main approaches to data-generic
 programming. There's the whole `Typeable`/`Data` approaches which is a bit
-magic. Lately however, there's been a new kid on the block, GHC.Generics.
+magic. Lately however, there has been a new kid on the block, GHC.Generics.
 
 In this post we'll step through the intuition for the library and (hopefully)
 help shed some light on why it exists and how to use it.
@@ -99,7 +99,7 @@ For example,
 
 ``` haskell
     gfst :: (TupleForm a ~ (b, c), Tuple a) => a -> b
-    gfst = fst . toF 
+    gfst = fst . toT
 ```
 
 Now that we understand fields, let's move on to constructors!
