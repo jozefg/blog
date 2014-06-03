@@ -10,10 +10,8 @@ Hello,
 My name is Danny Gratzer, I am a high school student in the US.
 
 ## Programming
-I like functional programming and types. Specifically, I write lots of compilers
-and type checkers in Haskell, Coq and Agda.
-
-Lisps are also fun so I also have heaps of Scheme code lying around.
+I like functional programming and types. I write lots of compilers
+and type checkers in Haskell, SML, Coq, and Agda.
 
 ## Juggling
 I've been juggling since 3rd grade. Nowadays I am a member of the
