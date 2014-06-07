@@ -259,3 +259,5 @@ unwilling to use mercurial for one command :)
 I should have posts about each specific phase of compilation up in
 Real Soon Now. I'll edit with a list of links to posts below as they
 are written.
+
+*Thanks to @tylerholien for proofreading*
