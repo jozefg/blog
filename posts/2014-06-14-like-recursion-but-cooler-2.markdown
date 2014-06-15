@@ -212,3 +212,5 @@ and all examples I can find since that's been the best way I've found to actuall
 grok `recurion-schemes`.
 
 If you're interested in sharing, either comment or email me at jozefg [at] cmu.edu.
+
+*Thanks to tel for proof reading*
