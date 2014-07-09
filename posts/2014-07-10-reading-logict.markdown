@@ -11,7 +11,8 @@ Haskell code.
 
 This time the code was pretty tiny, `find . -name *.hs | xargs wc -l`
 reveals two files with just under 400 lines of code! `logict` also
-only has two dependencies, base and the mtl!
+only has two dependencies, base and the mtl, so there's not a big
+worry of unfamiliar libraries.
 
 ## Setting Up
 
@@ -61,18 +62,22 @@ Alright! Now it's actually time to start reading code.
 
 The first thing that jumps out is the export list
 
+``` haskell
     module Control.Monad.Logic.Class (MonadLogic(..), reflect, lnot) where
+```
 
 Alright, so we're exporting everything from a class `MonadLogic`, as
 well as two functions `reflect` and `lnot`. Let's go figure out what
 `MonadLogic` is.
 
+``` haskell
     class (MonadPlus m) => MonadLogic m where
       msplit     :: m a -> m (Maybe (a, m a))
       interleave :: m a -> m a -> m a
       (>>-)      :: m a -> (a -> m b) -> m b
       ifte       :: m a -> (a -> m b) -> m b -> m b
       once       :: m a -> m a
+```
 
 The fact that this depends on `MonadPlus` is pretty significant. Since
 most classes don't require this I'm going to assume that it's fairly
@@ -123,6 +128,7 @@ The docs make it pretty clear what each member of this class does
 Now the docs also state that everything is derivable from
 `msplit`. These implementations look like
 
+``` haskell
     interleave m1 m2 = msplit m1 >>=
                         maybe m2 (\(a, m1') -> return a `mplus` interleave m2 m1')
 
@@ -133,14 +139,16 @@ Now the docs also state that everything is derivable from
 
     once m = do (a, _) <- maybe mzero return =<< msplit m
                 return a
-
+```
 
 The first thing I notice looking at interleave is that it kinda looks
 like
 
+``` haskell
     interleave' :: [a] -> [a] -> [a]
     interleave' (x:xs) ys = x : interleave' ys xs
     interleave _ ys       = ys
+```
 
 This makes sense, since this will fairly split between `xs` and `ys`
 just like `interleave` is supposed to. Here `msplit` is like pattern
@@ -152,7 +160,9 @@ Now about this mysterious `>>-`, the biggest difference is that each
 it can be fairly split between our first result, `f a` and the rest of
 them `m' >>- f`. Now if we can do something like
 
+``` haskell
     (m >>- f) `interleave` (m' >>- f)
+```
 
 Should have nice and fair behavior.
 
@@ -321,10 +331,12 @@ Now `return` and `fail` are pretty straightforward. Though this is
 interesting because since pattern matching calls `fail`, we can just
 do something like
 
+``` haskell
     do
       Just a <- m
       Just b <  n
       return $ a + b
+```
 
 And we'll run `n` and `m` until we get a `Just` value.
 
@@ -336,9 +348,11 @@ We're only going to talk about one more instance for `LogicT`,
 `MonadLogic`, there are a few others but they're mostly for MTL use
 and not too interesting.
 
+``` haskell
     instance (Monad m) => MonadLogic (LogicT m) where
         msplit m = lift $ unLogicT m ssk (return Nothing)
          where ssk a fk = return $ Just (a, (lift fk >>= reflect))
+```
 
 We're only implementing `msplit` here, which strikes me as a bit odd
 since we implemented everything before. We also actually need `Monad m`
@@ -391,6 +405,5 @@ as really clever and elegant Haskell code.
 
 One thing I've always enjoyed about the Haskell ecosystem is that some
 of the most interesting code is often quite easy to read given some time.
-
 
 [logict]: http://hackage.haskell.org/package/logict
