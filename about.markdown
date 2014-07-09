@@ -11,8 +11,7 @@ My name is Danny Gratzer, I am an incoming freshman at Carnegie Mellon Universit
 
 ## CS Stuff
 I like functional programming and types. I write lots of compilers
-and type checkers in Haskell, SML, Coq, and Agda. I have strong opinions
-on type systems and 
+and type checkers in Haskell, SML, Coq, and Agda.
 
 ## Juggling
 I've been juggling since 3rd grade. Nowadays I am a member of the
