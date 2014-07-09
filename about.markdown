@@ -7,11 +7,12 @@ title: About
 
 Hello,
 
-My name is Danny Gratzer, I am a high school student in the US.
+My name is Danny Gratzer, I am an incoming freshman at Carnegie Mellon University.
 
-## Programming
+## CS Stuff
 I like functional programming and types. I write lots of compilers
-and type checkers in Haskell, SML, Coq, and Agda.
+and type checkers in Haskell, SML, Coq, and Agda. I have strong opinions
+on type systems and 
 
 ## Juggling
 I've been juggling since 3rd grade. Nowadays I am a member of the
