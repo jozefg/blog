@@ -3,7 +3,7 @@ title: A Tutorial on Church Representations
 ---
 
 I've written [a][cr1] [few][cr2] [times][cr3] about church
-representations, but never aimed at someone at someone who'd never
+representations, but never aimed at someone who'd never
 heard of what a church representation is. In fact, it doesn't really
 seem like too many people have!
 
@@ -122,7 +122,7 @@ We can build all other boolean operations on `test`
 
 ``` haskell
     a && b = test a b false
-    a || b = test true b
+    a || b = test a true b
     when t e = test t e (return ())
 ```
 
@@ -241,6 +241,7 @@ Last but not least, the isomorphism arises from `foldr (:) []`,
 
     isoR :: [a] -> List a
     isoR l f z = foldr f z l
+```
 
 ## Either
 
@@ -333,4 +334,3 @@ automagically.
 [cr2]: /posts/2014-03-07-church-the-sequel.html
 [cr3]: /posts/2014-03-10-revenge-of-churchrep.html
 [gchurch]: http://hackage.haskell.org/package/generic-church
-
