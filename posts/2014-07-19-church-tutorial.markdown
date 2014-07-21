@@ -191,7 +191,7 @@ We can represent this with 3 functions
 If `match` looks confusing just remember that
 
 ``` haskell
-    f = match list g h
+    f list = match list g h
 ```
 
 Is really the same as
@@ -215,7 +215,7 @@ the most primitive form of "recursing" on a list.
 ```
 
 The especially nice thing about `foldr` is that it doesn't mention
-`List a` in it's too "destruction" functions, all the recursion is
+`List a` in its two "destruction" functions, all the recursion is
 handled in the implementation.
 
 We can implement CR lists trivially using `foldr`
