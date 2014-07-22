@@ -7,22 +7,25 @@ title: About
 
 Hello,
 
-My name is Danny Gratzer, I am an incoming freshman at Carnegie Mellon University.
+My name is Danny Gratzer, I am an incoming freshman at Carnegie Mellon
+University. I can be found haunting a coffee shop with a laptop and a
+cup of black coffee.
 
 ## CS Stuff
-I like functional programming and types. I write lots of compilers
-and type checkers in Haskell, SML, Coq, and Agda.
+I like functional type theory and compilers. I also enjoy a good bit of
+math and logic. I like writing Haskell, Coq or Agda.
 
 ## Juggling
-I've been juggling since 3rd grade. Nowadays I am a member of the
-Ultimate Club and a volunteer at Jugheads Youth Juggling Company.
+I've been for almost 10 years now. I've competed internationally a few
+times and have a few bits of metal to prove it. I mostly now hit
+myself upside the head with 5 or 6 clubs nowadays.
 
 ## Projects
 I have a few projects, listed below in no particular order
 
   - [c_of_scheme](http://www.bitbucket.org/jozefg/c_of_scheme)
 
-    A tiny compiler from Scheme to C
+    A tiny compiler from Scheme to C, implementing a few cool things.
 
   - [generic-church](http://www.bitbucket.org/jozefg/generic-church)
 
@@ -39,7 +42,7 @@ I have a few projects, listed below in no particular order
   - [melody](http://www.bitbucket.org/jozefg/melody)
 
     A stack based, higher order, functional language. Poorly documented, but
-    this should be improved Real Soon Now.
+    fun to monkey with.
 
 And quite a few other, less polished, projects on my [bitbucket](http://www.bitbucket.org/jozefg) account.
 
