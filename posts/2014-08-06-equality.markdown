@@ -43,9 +43,12 @@ So in Coq for example
 
     (2 + 2) ≡ 4
 
-Even though definitionally these are entirely separate entities. In
-type theories that distinguish between the two, the judgment that
-when normalized `x` is `y` is called judgemental equality. I won't
+Even though "definitionally" these are entirely separate
+entities. In most theories, definitionally equal means "inlining all
+definitions and with normalization", but not all.
+
+In type theories that distinguish between the two, the judgment that
+when normalized `x` is `y` is called judgmental equality. I won't
 distinguish between the two further because most don't, but it's worth
 noting that they can be seen as separate concepts.
 
@@ -159,9 +162,9 @@ It's worth noting that no extensional type theory is implemented this
 way. Instead they've taken a different approach to defining types
 themselves!
 
-Types are regarded as a partial equivalence relation (PER) over
-unityped (untyped if you want to get in a flamewar) lambda calculus
-terms.
+In this model of ETT types are regarded as a partial equivalence
+relation (PER) over unityped (untyped if you want to get in a
+flamewar) lambda calculus terms.
 
 These PERs precisely reflect the extensional equality at that "type"
 and we then check membership by reflexivity. So `a : T` is synonymous
@@ -170,8 +173,9 @@ know that `∀ a. (a, a) ∈ T` need not hold. This is reassuring,
 otherwise we'd be able to prove that every type was inhabited by every
 term!
 
-If this sounds interesting, dig further into the literature around
-NuRPL and friends.
+The actual NuRPL&friends theory is a little more complicated than
+that. It's not entirely dependent on PERs and allows a few different
+ways of introducing types, but I find that PERs are a helpful idea.
 
 ## Propositional Extensionality
 This is another flavor of extensional type theory which is really just
