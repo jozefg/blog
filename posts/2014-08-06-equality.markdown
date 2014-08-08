@@ -93,9 +93,26 @@ This yields a simple induction principle
            → (x y : A)(p : Id x y) → P x y p
 
 In other words, if we can prove that `P` holds for the reflexivity
-case, than `P` holds for any `x` and `y` where `Id x y`. Tangent:
-often times `id-ind` is referred to as `J`, I have no clue why but
-there you are.
+case, than `P` holds for any `x` and `y` where `Id x y`.
+
+We can actually phrase `Id` in a number of ways, including
+
+    data Id (A : Set)(x : A) : A → Set where
+      Refl : Id x x
+
+This really makes a difference in the resulting induction principle
+
+    j : (A : Set)(x : A)(P : (y : A) → Id x y → Set)
+      → P x Refl
+      → (y : A)(p : Id x y) → P y p
+
+This clearly turned out a bit differently! In particular now `P` is
+only parametrized over *one* value of `A`, `y`. This particular
+elimination is traditionally named `j`.
+
+These alternative phrasings can have serious impacts on proofs that
+use them. It also has even more subtle effects on things like
+heterogeneous equality which we'll discuss later.
 
 The fact that this only relies on simple inductive principles is also
 a win for typechecking. Equality/substitution fall straight out of how
@@ -248,6 +265,22 @@ equality
 This is termed after a British politician since while it promises that
 any two terms can be equal regardless of their class (type), only two
 things from the same class can ever be equal.
+
+Now remember how earlier I'd mentioned that how we phrase these
+inductive equality types can have a huge impact? We'll here we can see
+that because the above definition doesn't typecheck in Agda!
+
+That's because Agda is predicative, meaning that a type constructor
+can't quantify over the same universe it occupies. We can however,
+cleverly phrase `JMeq` so to avoid this
+
+``` agda
+    data JMeq (A : Set) : (B : Set) → A → B → Set where
+      JMrefl : (a : A) → JMeq A A a a
+```
+
+Now the constructor avoids quantifying over `Set` and therefore fits
+inside the same universe as `A` and `B`.
 
 `JMeq` is usually paired with an axiom to reflect heterogeneous
 equality back into our normal equality proof.
