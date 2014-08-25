@@ -204,8 +204,8 @@ So let's define a new version of `RNat`
 
 ``` haskell
     data RNat :: Nat -> * where
-      RZ : RNat Z
-      RS : RNat n -> RNat (S n)
+      RZ :: RNat Z
+      RS :: RNat n -> RNat (S n)
 ```
 
 This looks exactly like what we had before, but our semantics
