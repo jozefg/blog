@@ -17,7 +17,7 @@ There are four parts to this series, each answering one question
  1. What are dependent types?
  2. What does a dependently typed language look like?
  3. What does it feel like to write programs with dependent types?
- 4. What does it mean to "prove" something
+ 4. What does it mean to "prove" something?
 
 So first things first, what are dependent types? Most people by now
 have heard the unhelpful quick answer
@@ -347,4 +347,4 @@ Thanks for reading, I must run since I'm late for class. It's an FP
 class ironically enough.
 
 
-[kind-exp]: /posts/2014-02-10-types-kinds-and-sorts.markdown
+[kind-exp]: /posts/2014-02-10-types-kinds-and-sorts.html
