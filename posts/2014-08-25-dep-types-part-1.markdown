@@ -193,7 +193,7 @@ following syntax
     (x :: A) -> B x
 
 Where `A :: *` and `B :: A -> *` are some sort of type. Notice that
-that `Nat` in `B`'s kind isn't the data kind promoted version, but
+that `A` in `B`'s kind isn't the data kind promoted version, but
 just the goodness to honest normal value.
 
 Now in order to allow `B` to actually make use of it's supplied value,
