@@ -192,7 +192,7 @@ following syntax
 
     (x :: A) -> B x
 
-Where `A :: *` and `B :: Nat -> *` are some sort of type. Notice that
+Where `A :: *` and `B :: A -> *` are some sort of type. Notice that
 that `Nat` in `B`'s kind isn't the data kind promoted version, but
 just the goodness to honest normal value.
 
