@@ -17,7 +17,7 @@ There are four parts to this series, each answering one question
  1. What are dependent types?
  2. What does a dependently typed language look like?
  3. What does it feel like to write programs with dependent types?
- 4. What does it mean to "prove" something
+ 4. What does it mean to "prove" something?
 
 So first things first, what are dependent types? Most people by now
 have heard the unhelpful quick answer
@@ -192,8 +192,8 @@ following syntax
 
     (x :: A) -> B x
 
-Where `A :: *` and `B :: Nat -> *` are some sort of type. Notice that
-that `Nat` in `B`'s kind isn't the data kind promoted version, but
+Where `A :: *` and `B :: A -> *` are some sort of type. Notice that
+that `A` in `B`'s kind isn't the data kind promoted version, but
 just the goodness to honest normal value.
 
 Now in order to allow `B` to actually make use of it's supplied value,
@@ -347,4 +347,4 @@ Thanks for reading, I must run since I'm late for class. It's an FP
 class ironically enough.
 
 
-[kind-exp]: /posts/2014-02-10-types-kinds-and-sorts.markdown
+[kind-exp]: /posts/2014-02-10-types-kinds-and-sorts.html
