@@ -1,9 +1,9 @@
 ---
-title: What Are Dependent Types
+title: Introduction to Dependent Types: On to Agda
 ---
 
 It seems like dependent types are becoming "popular". Well, as close
-to popular as something so staunchly academic gets.. In any case, 
+to popular as something so staunchly academic gets.. In any case,
 I'd rather like to discuss exactly *what* these dependent types are.
 
 Since I write quite a lot of Haskell, this post is mostly aimed at a
@@ -244,7 +244,7 @@ Let's define `plus` as a function across these natural numbers
     plus : Nat → Nat → Nat
     plus Zero m     = m
     plus (Succ n) m = Succ (plus n m)
-      
+
 We recursively define plus so that `0 + m = m` and
 `(1 + n) + m = 1 + (n + m)`. Now we'd like to prove some properties
 about `plus` in order to convince ourselves that this definition is
@@ -296,7 +296,7 @@ equality
 
     sym : {A : Set}(a b : A) → a ≡ b → b ≡ a
     sym a .a Refl = Refl
-    
+
     trans : {A : Set}(a b c : A) → a ≡ b → b ≡ c → a ≡ c
     trans a .a .a Refl Refl = Refl
 
@@ -308,7 +308,7 @@ Now to the meat of our proof,
     moveSucc : (n m : Nat) →  Succ (plus n m) ≡ plus n (Succ m)
     moveSucc Zero m     = Refl
     moveSucc (Succ n) m = extend (Succ (plus n m)) (plus n (Succ m)) (moveSucc n m)
-    
+
     comm : (n m : Nat) → plus n m ≡ plus m n
     comm Zero m     = sym (plus m Zero) m (rightId m)
     comm (Succ n) m = trans (Succ (plus n m)) (Succ (plus m n)) (plus m (Succ n))
