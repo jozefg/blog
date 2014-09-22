@@ -429,7 +429,7 @@ involved unpacking our `Either` and than immediately repacking it,
 this looks like something we can abstract over.
 
 ``` agda
-    bimap : (A B C D : Set) -> (A -> A) -> (B -> B) -> A ⊎ B -> A ⊎ B
+    bimap : (A B C D : Set) -> (A -> C) -> (B -> D) -> A ⊎ B -> C ⊎ D
     bimap A B C D f g (inj₁ x) = inj₁ (f x)
     bimap A B C D f g (inj₂ y) = inj₂ (g y)
 ```
@@ -508,7 +508,7 @@ argument, we just wrap it in `{}` instead of `()`. So for example, we
 could rewrite `bimap` as
 
 ``` agda
-    bimap : {A B C D : Set} -> (A -> A) -> (B -> B) -> A ⊎ B -> A ⊎ B
+    bimap : {A B C D : Set} -> (A -> C) -> (B -> D) -> A ⊎ B -> C ⊎ D
     bimap f g (inj₁ x) = inj₁ (f x)
     bimap f g (inj₂ y) = inj₂ (g y)
 ```
