@@ -58,7 +58,9 @@ abstract types.
 
 After all, we're not really thinking about modules as so much as
 hiding some details. That sounds like something our type system should
-be able to handle without having to rope in modules.
+be able to handle without having to rope in modules. By isolating the
+concept of abstraction in our type system, we might be able to more
+deeply understand and reason about code that uses abstract types.
 
 This is in fact quite possible, let's rephrase our definition of
 `Stack`
@@ -112,7 +114,7 @@ Now what should we fill in `???` with? It's some type, but it's meant
 to be chosen by the callee, not the caller. Does that sound familiar?
 Existential types to the rescue!
 
-```
+``` haskell
     {-# LANGUAGE PolyKinds, KindSignatures, ExistentialQuantification #-}
     module Stack where
 
