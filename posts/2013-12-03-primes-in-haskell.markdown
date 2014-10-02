@@ -1,5 +1,6 @@
 ---
 title: Sieves in Haskell
+tags: haskell
 ---
 
 The other day I was answering a question on StackOverflow and decided

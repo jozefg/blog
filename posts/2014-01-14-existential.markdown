@@ -1,5 +1,6 @@
 ---
 title: Faking Existentials with Rank N Types
+tags: haskell, types
 ---
 
 GHC has a language extension call `ExistentialQuantification`. This lets
@@ -49,7 +50,7 @@ and store polymorphic values in lists.
     {-# LANGUAGE RankNTypes, ConstraintKinds #-}
     {-# LANGUAGE KindSignatures, ImpredicativeTypes #-}
     import GHC.Prim (Constraint)
-    
+
     type Exists c = forall x. (forall a. c a => a -> x) -> x
 ```
 
@@ -104,4 +105,3 @@ Which outputs
 Just as expected!
 
 And there you have it, existential types cobbled together from a few other extensions.
-

@@ -1,5 +1,6 @@
 ---
 title: Examining Hackage: extensible-effects
+tags: haskell
 ---
 
 I had a few people tell me after my [last post][last-post] that they would enjoy a
@@ -97,7 +98,7 @@ instances for `Member` in this code base is
 ``` haskell
     infixr 1 :>
     data ((a :: * -> *) :> b)
-    
+
     class Member t r
     instance Member t (t :> r)
     instance Member t r => Member t (t' :> r)
@@ -168,7 +169,7 @@ First up is an unsafe "forced" version of `prj`.
     (<?>) :: Maybe a -> a -> a
     Just a <?> _ = a
     _ <?> a = a
-    
+
     prjForce :: (Typeable1 t, Member t r) => Union r v -> (t v -> a) -> a
     prjForce u f = f <$> prj u <?> error "prjForce with an invalid type"
 ```
@@ -267,15 +268,15 @@ Next in `Control.Eff` is the instances for `Eff`
     instance Functor (Eff r) where
         fmap f m = Eff $ \k -> runEff m (k . f)
         {-# INLINE fmap #-}
-    
+
     instance Applicative (Eff r) where
         pure = return
         (<*>) = ap
-    
+
     instance Monad (Eff r) where
         return x = Eff $ \k -> k x
         {-# INLINE return #-}
-    
+
         m >>= f = Eff $ \k -> runEff m (\v -> runEff (f v) k)
         {-# INLINE (>>=) #-}
 ```
@@ -476,7 +477,7 @@ From `runState` `evalState` and `execState`.
 ``` haskell
     evalState :: Typeable s => s -> Eff (State s :> r) w -> Eff r w
     evalState s = fmap snd . runState s
-    
+
     execState :: Typeable s => s -> Eff (State s :> r) w -> Eff r s
     execState s = fmap fst . runState s
 ```

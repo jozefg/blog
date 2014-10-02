@@ -1,5 +1,6 @@
 ---
 title: Fixpoints and Iso-recursive Types
+tags: haskell, types
 ---
 
 Let's imagine a world where Haskell didn't have recursive functions.

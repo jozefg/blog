@@ -1,5 +1,6 @@
 ---
 title: A Tutorial on Church Representations
+tags: haskell, types
 ---
 
 I've written [a][cr1] [few][cr2] [times][cr3] about church
@@ -61,7 +62,7 @@ Let's look at how the rest of our API is implemented
     snd tup     = tup (\_ b -> b)
 ```
 
-And that's it! 
+And that's it!
 
 It's helpful to step through some reductions here
 
@@ -252,7 +253,7 @@ has 3 different operations.
     type Or a b = ...
     inl :: a -> Or a b
     inr :: b -> Or a b
-    
+
     or :: Or a b -> (a -> c) -> (b -> c)  -> c
 ````
 
@@ -262,7 +263,7 @@ This is pretty easy to implement with `Either`
     type Or a b = Either a b
     inl = Left
     inr = Right
-    
+
     or (Left a)  f g = f a
     or (Right b) f g = g b
 ```
@@ -272,7 +273,7 @@ of the API. In this case we use the type of `or`
 
 ``` haskell
      type Or a b = forall c. (a -> c) -> (b -> c) -> c
-  
+
     inl a = \f g -> f a
     inr b = \f g -> g a
 
@@ -323,7 +324,7 @@ really church representations in disguise.
 
 My favorite example is `maybe`, this function takes a success and
 failure continuation with a `Maybe` and produces a value. With a
-little bit of imagination, one can realize that this is really just 
+little bit of imagination, one can realize that this is really just
 a function mapping a `Maybe` to a church representation!
 
 If you're thinking that CRs are pretty cool! Now might be a time to

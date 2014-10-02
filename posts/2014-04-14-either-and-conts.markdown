@@ -1,5 +1,6 @@
 ---
 title: Continuations and Exceptions
+tags: haskell
 ---
 
 Continuations are useful things. They provide a nice way to manually
@@ -27,7 +28,7 @@ We have
 ``` haskell
     {-# LANGUAGE DeriveFunctor #-}
     import Control.Monad
-    
+
     newtype Throws r e a = Throws {runThrows :: (e -> r) -> (a -> r) -> r}
     deriving (Functor)
 ```
@@ -83,7 +84,7 @@ No post would be complete without a demonstration!
 ``` haskell
     data Ex = Boom | Kaboom | Splat String
             deriving Show
-    
+
     throwEx1 = throw Boom
     throwEx2 = throw Kaboom
     throwEx3 = throw (Splat "splat")

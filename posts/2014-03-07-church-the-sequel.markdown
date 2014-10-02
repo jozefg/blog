@@ -1,5 +1,6 @@
 ---
 title: Church Representations: Part 2
+tags: haskell, types
 ---
 
 In the [last](/posts/2014-03-06-church.html) post, we discussed some of the
@@ -142,7 +143,7 @@ No we're ready to proceed to the actual transformation type classes.
       prod _ (K1 r) f = f r
     instance GChurchProd (r p) => GChurchProd ((:*:) (K1 a t) r p) where
       prod p (K1 l :*: r) f = prod p r (f l)
-    
+
     class Swallow a where
       swallow :: Proxy a -> c -> ChurchSum a c
     instance Swallow (ListTerm p) where
@@ -167,7 +168,7 @@ Now, finally, `GChurchSum`
 ``` haskell
     class GChurchSum a r where
       elim :: Proxy r -> a -> ChurchSum a r -- Proxy because type inference is stubborn
-    
+
     instance (GListProd (l p) (ListTerm ()), GChurchProd (ToListProd (l p) (ListTerm ())),
               GChurchSum (r' p) r, Swallow (r' p)) =>
              GChurchSum ((:+:) l r' p) r where
@@ -182,7 +183,7 @@ Now, finally, `GChurchSum`
 
 Now the `elim` instance for `ListTerm` can never be called, this is
 guarenteed by the definition of `toList` since a type must occupy one
-state prior to `ToList`, we'll never end up with `ListTerm`. 
+state prior to `ToList`, we'll never end up with `ListTerm`.
 
 Otherwise if we get an `L1` then we're at the actual value
 our sum type is in so we produce an `r` and swallow the rest
@@ -196,8 +197,8 @@ To put it all together
 ``` haskell
     from' :: Generic a => a -> Rep a ()
     from' = from
-    
-    toChurch :: forall a r. 
+
+    toChurch :: forall a r.
                 (Generic a, GStripMeta (Rep a ()),
                  GList (StripMeta (Rep a ())) (ListTerm ()),
                  GChurchSum (ToList (StripMeta (Rep a ())) (ListTerm ())) r) =>

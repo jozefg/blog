@@ -1,5 +1,6 @@
 ---
 title: forall Means All!
+tags: haskell, types
 ---
 It seems like the every week on Stack Overflow there's at least two questions
 about higher rank polymorphism (RankNTypes). So here's a brief description

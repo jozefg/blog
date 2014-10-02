@@ -1,5 +1,6 @@
 ----
 title: Grokking recursion-scheme: Part 1
+tags: haskell
 ----
 
 This post is a little different than the rest of my blog, I'm
@@ -160,7 +161,7 @@ And we can use it the same way!
     map f = cata mapper
       where mapper (BCons a b) = f a `MyCons` b
             mapper BNil        = MyNil
-            
+
 
     myfilter :: (a -> Bool) -> List a -> List a
     myfilter p = cata filterer

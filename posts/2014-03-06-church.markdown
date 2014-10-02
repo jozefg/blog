@@ -1,5 +1,6 @@
 ---
 title: Church Representations
+tags: haskell, types
 ---
 
 A project I've been playing with lately is generalizing `maybe`.
@@ -182,7 +183,7 @@ to a list though
 
 ``` haskell
     data ListTerm p -- The list terminator
-    
+
     type family ToList v rest :: *
     type instance ToList ((:+:) l r' p) r = ToList (l p) (ToList (r' p) r)
     type instance ToList (K1 a t p)     r = (K1 a t     :+: WithoutParam r) p

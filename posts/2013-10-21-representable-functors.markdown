@@ -1,5 +1,6 @@
 ----------
 title: Representable Functors
+tags: haskell, math
 ----------
 
 Representable functors are a powerful tool in category theory. As it turns out,
@@ -64,7 +65,7 @@ to finding some simple representable functors. Let's look at a trivial case
 
     newtype Unit = Unit
     type instance Obj Identity = Unit
-    
+
     instance Repr Identity where
       toHom (Identity a) = const a
       toF f = Identity $ f Unit

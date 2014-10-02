@@ -1,5 +1,6 @@
 ---
 title: Optimizing a Trie
+tags: haskell
 ---
 
 The other day I stumbled across some of old code for a trie. Being the hardworking
@@ -15,22 +16,22 @@ The code I ended up with was something like
     import qualified Data.Map.Strict as M
     import Data.Map.Strict ((!))
     import qualified Data.ByteString.Char8 as B
-    
+
     newtype Trie = Node {subs :: M.Map Char Trie}
       deriving (Eq, Show, Ord)
-    
+
     add :: B.ByteString -> Trie -> Trie
     add (B.uncons -> Just (c, s)) (Node subs) = Node
                                                . with
                                                . maybe (Node M.empty) id
                                                $ M.lookup c subs
       where with next = M.insert c (add s next) subs
-    
+
     add _ trie = trie
-    
+
     build :: [B.ByteString] -> Trie
     build = foldl' (flip add) (Node M.empty)
-    
+
     contains :: B.ByteString -> Trie -> Bool
     contains (B.uncons -> Just (c, s)) (Node subs) = M.member c subs && contains s next
       where next = subs ! c

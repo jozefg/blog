@@ -1,5 +1,6 @@
 ---
 title: Grokking recursion-schemes: Part 2
+tags: haskell
 ---
 
 In this post I'd like to talk about the second half of
@@ -150,7 +151,7 @@ We can build this binary tree with `ana`.
 
 ``` haskell
     import GHC.Real
-  
+
     data Bin a    = Node a (Bin a) (Bin a)
     data BBin a b = NodeB a b b deriving Functor
 
@@ -159,7 +160,7 @@ We can build this binary tree with `ana`.
     instance Unfoldable (Bin a) where
       embed (NodeB a l r) = Node a l r
     instance Foldable (Bin a) where
-    
+
 
     rats :: Bin Rational
     rats = ana builder (1 % 1)

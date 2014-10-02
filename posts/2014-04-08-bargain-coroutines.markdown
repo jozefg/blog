@@ -1,5 +1,6 @@
 ---
 title: Bargain Priced Coroutines
+tags: haskell
 ---
 
 The other day I was reading the 19th issue of the Monad.Reader
@@ -27,7 +28,7 @@ This sounds like a free monad!
 ``` haskell
     import Control.Monad.Trans.Free
     import Control.Monad.Identity
-    
+
     type Trampoline = FreeT Identity
 ```
 
@@ -184,7 +185,7 @@ And now we can use it!
       yield 1
       lift $ putStrLn "Yielding 2"
       yield 2
-    
+
     addCon :: Consumer Int IO ()
     addCon = do
       lift $ putStrLn "Waiting for a..."

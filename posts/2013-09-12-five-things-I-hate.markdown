@@ -1,5 +1,6 @@
 -----
 title: 5 things I hate about Haskell
+tags: opinions, haskell
 -----
 I was on programmers.stackexchange today and I say an interesting question,
 [Why the question “give five things you hate about C#” is so difficult to answer during an interview?](http://programmers.stackexchange.com/questions/159754/why-the-question-give-five-things-you-hate-about-c-is-so-difficult-to-answer). It got me thinking, can I name 5 things I hate about my Haskell, my favorite language?
@@ -40,5 +41,3 @@ But in a `do` block, you might just end up with `fail`. Which is *probably* a ru
  exception, but might also be a parser failure or `Nothing` or `Left` or something else just to name a few. Ick.
 
 I'd much prefer it if we just had runtime failures and then used `mzero` when we want failure. That's what it's for.
- 
- 

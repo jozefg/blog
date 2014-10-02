@@ -1,5 +1,6 @@
 ---
 title: Equality is Hard
+tags: types
 ---
 
 Equality seems like one of the simplest things to talk about in a
@@ -233,7 +234,7 @@ proofs that `Id x x` are `Refl x`
     rec A P x .x p refl = p
 
     rec-refl-is-useless : (A : Set)(P : A → Set)(x : A)
-                        → (p : P x)(eq : x ≡ x) → p ≡ rec A P x x p eq 
+                        → (p : P x)(eq : x ≡ x) → p ≡ rec A P x x p eq
     rec-refl-is-useless A P x p eq with prop A x x eq refl
     rec-refl-is-useless A P x p .refl | refl = refl
 ```

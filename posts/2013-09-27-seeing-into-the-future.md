@@ -1,5 +1,6 @@
 -----
 title: Logic and Continuations
+tags: haskell
 -----
 
 In Haskell there's a monad known as `Cont`. Most people don't use it, but it's pretty cool. The basic idea is that

@@ -1,5 +1,6 @@
 ---
 title: Examining Hackage: logict
+tags: haskell
 ---
 
 One of my oldest habits with programming is reading other people's
@@ -23,7 +24,7 @@ on hand. To grab it, use `cabal get`. My setup is something like
     ~ $ cd logict-0.6.0.2
     ~/logict-0.6.0.2 $ cabal sandbox init
     ~/logict-0.6.0.2 $ cabal install --only-dependencies
-    
+
 ## Poking Around
 
 I'm somewhat ashamed to admit that I use pretty primitive tooling for
@@ -237,7 +238,7 @@ a `LogicT` computation
 ``` haskell
     observeT :: Monad m => LogicT m a -> m a
     observeT lt = unLogicT lt (const . return) (fail "No answer.")
-    
+
     observeAllT :: Monad m => LogicT m a -> m [a]
     observeAllT m = unLogicT m (liftM . (:)) (return [])
 
@@ -272,7 +273,7 @@ non-transformer version.
 
 ``` haskell
     type Logic = LogicT Identity
-    
+
     logic :: (forall r. (a -> r -> r) -> r -> r) -> Logic a
     logic f = LogicT $ \k -> Identity .
                              f (\a -> runIdentity . k a . Identity) .
@@ -293,15 +294,15 @@ Next we have a few type class instances
 ``` haskell
     instance Functor (LogicT f) where
         fmap f lt = LogicT $ \sk fk -> unLogicT lt (sk . f) fk
-    
+
     instance Applicative (LogicT f) where
         pure a = LogicT $ \sk fk -> sk a fk
         f <*> a = LogicT $ \sk fk -> unLogicT f (\g fk' -> unLogicT a (sk . g) fk') fk
-    
+
     instance Alternative (LogicT f) where
         empty = LogicT $ \_ fk -> fk
         f1 <|> f2 = LogicT $ \sk fk -> unLogicT f1 sk (unLogicT f2 sk fk)
-    
+
     instance Monad (LogicT m) where
         return a = LogicT $ \sk fk -> sk a fk
         m >>= f = LogicT $ \sk fk -> unLogicT m (\a fk' -> unLogicT (f a) sk fk') fk
@@ -369,18 +370,18 @@ lists, where `msplit` is just `uncons`.
 
 ``` haskell
     {-# LANGUAGE RankNTypes #-}
-    
+
     newtype CList a = CList {runCList :: forall r. (a -> r -> r) -> r -> r}
-    
+
     cons :: a -> CList a -> CList a
     cons a (CList list) = CList $ \cs nil -> cs a (list cs nil)
-    
+
     nil :: CList a
     nil = CList $ \cons nil -> nil
-    
+
     head :: CList a -> Maybe a
     head list = runCList list (const . Just) Nothing
-    
+
     uncons :: CList a -> Maybe (a, CList a)
     uncons (CList list) = list skk Nothing
       where skk a rest = Just (a, maybe nil (uncurry cons) rest)

@@ -1,5 +1,6 @@
 ---
 title: Types and Kinds and Sorts, Oh My!
+tags: haskell, types
 ---
 
 One subject that most introductory Haskell books fail to address is kinds.
@@ -88,7 +89,7 @@ about GADTs if necessary.
 
     data Black -- This is what EmptyDataDecls allows,
     data Red   -- types with no constructors
-    
+
     data Tree :: * -> * -> * where
       Leaf  :: Tree a Black
       NodeR :: a -> Tree a Black -> Tree a Black -> Tree a Red
@@ -118,7 +119,7 @@ Enter `DataKinds`
     {-# LANGUAGE KindSignatures, DataKinds, GADTs #-}
 
     data Color = Red | Black
-    
+
     data Tree :: * -> Color -> * where
       Leaf  :: Tree a Black
       NodeR :: a -> Tree a Black -> Tree a Black -> Tree a Red

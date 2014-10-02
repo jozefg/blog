@@ -1,5 +1,6 @@
 ---
 title: Some Fun Dependently Typed Programs
+tags: agda, types
 ---
 
 I've been playing with Agda lately and decided to translate my two favorite dependently typed
@@ -54,7 +55,7 @@ with a bit of dependent-type-foo
 
 ``` agda
     open import Data.List
-    
+
     data HList : List Set -> Set1 where
       []  : HList []
       _∷_ : {A : Set}{xs : List Set} -> A -> HList xs -> HList (A ∷ xs)

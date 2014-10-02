@@ -1,5 +1,6 @@
 ---
 title: Dissecting crush
+tags: coq, types
 ---
 
 For almost a year and half now I've been referencing one particular
@@ -125,7 +126,7 @@ Now we get to the first *big* tactic
         inList F invOne;
           (inversion H; fail)
           || (inversion H; [idtac]; clear H; try subst) in
-    
+
       match goal with
         | [ H : ex _ |- _ ] => destruct H
         | [ H : ?F ?X = ?F ?Y |- ?G ] =>
@@ -143,13 +144,13 @@ Now we get to the first *big* tactic
               | [ |- U = V -> X = Y -> G ] =>
                 try clear H; intros; try subst
             end)
-    
+
         | [ H : ?F _ |- _ ] => invert H F
         | [ H : ?F _ _ |- _ ] => invert H F
         | [ H : ?F _ _ _ |- _ ] => invert H F
         | [ H : ?F _ _ _ _ |- _ ] => invert H F
         | [ H : ?F _ _ _ _ _ |- _ ] => invert H F
-    
+
         | [ H : existT _ ?T _ = existT _ ?T _ |- _ ] => generalize (inj_pair2 _ _ _ _ _ H); clear H
         | [ H : existT _ _ _ = existT _ _ _ |- _ ] => inversion H; clear H
         | [ H : Some _ = Some _ |- _ ] => injection H; clear H
@@ -220,7 +221,7 @@ We only run `injection` if it generates a proof that `X = Y` in which case we do
 cleanup with trying to clear our original fact and do some substitution.
 
 The next part is fairly straightforward, we make use of that `invert` tactic and run it over
-facts we have floating around in our environment 
+facts we have floating around in our environment
 
         | [ H : ?F _ |- _ ] => invert H F
         | [ H : ?F _ _ |- _ ] => invert H F
@@ -419,7 +420,7 @@ Now, finally, we've reached `crush'`.
     Ltac crush' lemmas invOne :=
       let sintuition := simpl in *; intuition; try subst;
         repeat (simplHyp invOne; intuition; try subst); try congruence in
-    
+
       let rewriter := autorewrite with core in *;
         repeat (match goal with
                   | [ H : ?P |- _ ] =>
@@ -428,7 +429,7 @@ Now, finally, we've reached `crush'`.
                       | _ => rewrite H by crush' lemmas invOne
                     end
                 end; autorewrite with core in *) in
-    
+
         (sintuition; rewriter;
           match lemmas with
             | false => idtac            | _ =>

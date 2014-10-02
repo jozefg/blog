@@ -1,5 +1,6 @@
 ---
 title: Overview of A Scheme Compiler
+tags: haskell, compilers
 ---
 
 For the last few months I've been spending a fair amount of time on a

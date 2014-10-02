@@ -1,5 +1,6 @@
 ---
 title: Abstract Types are Existential
+tags: haskell, types
 ---
 
 I'm part of a paper reading club at CMU. Last week we talked about a

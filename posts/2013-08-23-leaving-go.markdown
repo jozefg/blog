@@ -1,6 +1,6 @@
 -----------------
 title: Leaving Go
-tags: Go
+tags: go, opinions
 -----------------
 I've been using Go since November and I've decided that it's time to give it
 up for my hobby projects. I'd still be happy to use it professionally, but

@@ -1,5 +1,6 @@
 ---
 title: Some Useful Agda
+tags: agda, types
 ---
 
 I've been using Agda for a few months now. I've always meant to figure
@@ -11,7 +12,7 @@ So hello world in Agda apparently looks like this
 
 ``` agda
     open import IO
-    
+
     main = run (putStrLn "test")
 ```
 
@@ -78,11 +79,11 @@ recursion seems to always work though. So we can write something like
 ``` agda
     open import Coinduction
     open import Data.Unit
-    
+
     data Cothingy (A : Set) : Set where
       conil  : Cothingy A
       coCons : A → ∞ (Cothingy A) → Cothingy A
-    
+
     lotsa-units : Cothingy ⊤
     lotsa-units = coCons tt (♯ lotsa-units)
 ```
@@ -118,7 +119,7 @@ imports
 
 ``` agda
     module fizzbuzz where
-    
+
     import Data.Nat        as N
     import Data.Nat.DivMod as N
     import Data.Nat.Show   as N
@@ -151,10 +152,10 @@ Now from here we can combine this into the actual worker for the
 program
 
 ``` agda
-    
+
     _and_ : {A B : Set} → A → B → A × B
     _and_ = _,_
-    
+
     fizzbuzz : N.ℕ → S.String
     fizzbuzz N.zero    = "fizzbuzz"
     fizzbuzz n with congruent n 3 and congruent n 5
@@ -170,7 +171,7 @@ Now all that's left is the `IO` glue
     worker : N.ℕ → IO U.⊤
     worker N.zero    = putStrLn $ fizzbuzz N.zero
     worker (N.suc n) = ♯ worker n >> ♯ putStrLn (fizzbuzz $ N.suc n)
-    
+
     main = run $ worker 100
 ```
 

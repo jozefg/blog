@@ -1,5 +1,6 @@
 ---
 title: Sieves in Haskell: Part 2
+tags: haskell
 ---
 So in my last post about sieves in Haskell, I'd mentioned that there is a purely
 functional approach infinite, lazy sieves. In the post I'll explain how to construct

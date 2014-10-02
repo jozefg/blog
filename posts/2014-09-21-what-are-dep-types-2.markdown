@@ -1,5 +1,6 @@
 ---
 title: Introduction to Dependent Types: Off, Off to Agda Land
+tags: agda, types
 ---
 
 *First, an apology. Sorry this has take so long to push out. I've just

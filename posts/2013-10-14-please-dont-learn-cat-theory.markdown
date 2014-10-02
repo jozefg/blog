@@ -1,5 +1,6 @@
 -----
 title: Please Don't Learn Category Theory
+tags: haskell, opinions
 -----
 
 I spend a lot of time talking about Haskell. Trying to get imperative programmers to learn Haskell is hard,

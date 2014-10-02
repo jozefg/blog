@@ -1,5 +1,6 @@
 ---
 title: Sports for Geeks
+tags: opinions
 ---
 
 Over the last few months, I have been acquiring various tidbits of knowledge to do with sports. This has been essential since my girlfriend likes football.

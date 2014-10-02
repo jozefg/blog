@@ -1,5 +1,6 @@
 ----
 title: Colleges and My Not-So-Distant Future
+tags: personal
 ----
 
 This is a short but excited post.

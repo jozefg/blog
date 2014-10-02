@@ -1,5 +1,6 @@
 ----
 title: Learn You Some Category Theory
+tags: math
 ----
 
 ### Introduction

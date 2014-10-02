@@ -1,5 +1,6 @@
 ---
 title: Introduction to Dependent Types: Haskell on Steroids
+tags: haskell, types
 ---
 
 I'd like to start another series of blog posts. This time on something

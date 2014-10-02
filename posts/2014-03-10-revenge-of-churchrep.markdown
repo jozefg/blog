@@ -1,5 +1,6 @@
 ---
 title: Church Representations: Part 3
+tags: haskell, types
 ---
 
 To conclude my recent spat of posts on [church](/posts/2014-03-06-church.html)
@@ -29,16 +30,16 @@ We'll start by defining a few useful type families across type level lists
     type instance Head (x ': xs) = x
     type family Tail (xs :: [k]) :: [k]
     type instance Tail (x ': xs) = xs
-    
+
     pHead :: Proxy xs -> Proxy (Head xs)
     pHead = reproxy
     pTail :: Proxy xs -> Proxy (Tail xs)
     pTail = reproxy
-    
+
     type family Append (xs :: [k]) (ys :: [k]) :: [k]
     type instance Append '[] ys = ys
     type instance Append (x ': xs) ys = x ': Append xs ys
-    
+
     type family Reverse (xs :: [k]) :: [k]
     type instance Reverse '[] = '[]
     type instance Reverse (x ': xs) = Append (Reverse xs) (x ': '[])
@@ -178,7 +179,7 @@ with `path` to mimic constructors
 ``` haskell
     class GBuild (paths :: [[Traverse *] ])f r where
       build :: Proxy paths -> f -> r
-    
+
     -- | Unit case. This represents constructors with no arguments
     instance (ReconstructPath x ~ r, GPath x, GBuild xs f' r, PathArg x ~ U1 p)
              => GBuild (x ': xs) (r -> f') r where
@@ -247,7 +248,7 @@ and fill in the corresponding bit of our structure.
     instance GUpdate rest (l p) => GUpdate (InL (r p) p ': rest) ((:*:) l r p) where
       update p (l :*: r) a = update (pTail p) l a :*: r
     instance GUpdate rest (r p) => GUpdate (InR (l p) p ': rest) ((:*:) l r p) where
-      update p (l :*: r) a = l :*: update (pTail p) r a 
+      update p (l :*: r) a = l :*: update (pTail p) r a
     instance GUpdate rest (f p) => GUpdate (Meta a b p ': rest) (M1 a b f p) where
       update p (M1 f) a = M1 (update (pTail p) f a)
 ```
@@ -258,13 +259,13 @@ structure since we intend to use this with `GEmpty` and all those leaves will bl
 if poked.
 
 Now for the really clever bit, we can use `update` to create a function which will
-take in an argument and the corresponding path to fill it in in the structure. 
+take in an argument and the corresponding path to fill it in in the structure.
 
 ``` haskell
     type family Fill (paths :: [[Traverse *] ]) r
     type instance Fill (x ': xs) r = StripK (PathArg x) -> Fill xs r
     type instance Fill '[] r = r
-    
+
     class GFill (paths :: [[Traverse *] ]) a where
       fill :: Proxy paths -> (a -> r) -> a -> Fill paths r
     instance GFill '[] a where

@@ -1,5 +1,6 @@
 ---
 title: You Could Have Invented GHC.Generics
+tags: haskell
 ---
 
 In Haskell right now there seem to be two main approaches to data-generic

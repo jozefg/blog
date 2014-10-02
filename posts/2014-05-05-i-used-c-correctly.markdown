@@ -1,5 +1,6 @@
 ---
 title: Getting Proper Tail Calls Out of C
+tags: c, compilers
 ---
 
 While I don't exactly love *writing* C, it has
@@ -186,7 +187,7 @@ must be modified
         exit(1);
       } else {
         arg_list[0] = f->val.scm_lam.clos;
-    
+
         if(stack_frames >= 100){
           // Transfer continuation up
           current_fun     = f;

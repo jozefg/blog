@@ -1,5 +1,6 @@
 ---
 title: Teaching Python with a Raspberry Pi
+tags: teaching
 ---
 
 This last week I've been volunteering at a summer camp. This camp is

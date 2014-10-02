@@ -1,5 +1,6 @@
 ---
 title: Many Shades of Halting Oracles
+tags: types
 ---
 
 I'm going to a take a quick break from arguing with people on the
@@ -94,18 +95,18 @@ chain that could lead us to infinite recursion.
     Section founded.
       Variable A : Set.
       Variable R : A -> A -> Prop.
-    
+
       Variable well_founded : well_founded R.
-    
+
       CoInductive stream :=
       | Cons : A -> stream -> stream.
-    
+
       CoInductive tower_of_bad : stream -> Prop :=
         OnTop : forall x y rest,
                 R y x ->
                 tower_of_bad (Cons y rest) ->
                 tower_of_bad (Cons x (Cons y rest)).
-    
+
       Lemma never_on_top :
         forall x, forall rest, ~ tower_of_bad (Cons x rest).
         intro; induction (well_founded x); inversion 1; try subst;
@@ -113,7 +114,7 @@ chain that could lead us to infinite recursion.
             [H : context[~ _] |- _ ] => eapply H; eauto
         end.
       Qed.
-    
+
       Theorem no_chains :
         forall xs, ~ tower_of_bad xs.
         destruct 1; eapply never_on_top; eauto.

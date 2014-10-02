@@ -1,5 +1,6 @@
 ----
 title: Naive Map Isn't So Naive
+tags: haskell
 ----
 
 One of the most beloved functions in functional programming languages is `map`. It can be defined like this:

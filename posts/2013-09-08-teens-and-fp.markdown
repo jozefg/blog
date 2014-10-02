@@ -1,5 +1,6 @@
 ----
 title: Teens and Functional Programming
+tags: opinions
 ----
 
 As a teenager who spends most of his time programming, I spend
@@ -248,4 +249,3 @@ Perhaps I've overlooked something, but right now I think functional programming 
 a ways to go making it more accessible to beginners. And I think it's definitely worth the
 effort since a lot of the marketing points of FP, easier reasoning, simplified concepts, etc
 are all excellent for beginners.
-
