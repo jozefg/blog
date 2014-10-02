@@ -1,5 +1,5 @@
 ---
-title: Abstract Types are Existential
+title: Notes on Abstract and Existential Types
 tags: haskell, types
 ---
 

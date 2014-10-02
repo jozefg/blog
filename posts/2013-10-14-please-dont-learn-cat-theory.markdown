@@ -1,5 +1,5 @@
 -----
-title: Please Don't Learn Category Theory
+title: Please Don't Learn Category Theory to Learn Haskell
 tags: haskell, opinions
 -----
 
