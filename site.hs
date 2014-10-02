@@ -73,9 +73,10 @@ main = hakyll $ do
     match "index.html" $ do
         route idRoute
         compile $ do
-            posts <- fmap (take 20) (recentFirst =<< loadAll "posts/*")
+            posts <- fmap (take 20) . recentFirst =<< loadAll "posts/*"
             let indexCtx =
                     listField "posts" postCtx (return posts) `mappend`
+                    field "tags" (\_ -> renderTagList tags)   `mappend`
                     constField "title" "Home"                `mappend`
                     defaultContext
 
@@ -92,6 +93,7 @@ main = hakyll $ do
         posts <- fmap (take 10) . recentFirst =<<
             loadAllSnapshots "posts/*" "content"
         renderRss feedConfiguration feedCtx posts
+
     create ["atom.xml"] $ do
       route idRoute
       compile $ do
