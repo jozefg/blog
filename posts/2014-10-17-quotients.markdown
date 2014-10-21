@@ -284,7 +284,7 @@ pursue
  - How can we express quotient types with higher inductive types from
    HoTT
 
-The last one in particularly interesting.
+The last one is particularly interesting.
 
 *Thanks to Jon Sterling for proof reading*
 
