@@ -1,0 +1,44 @@
+---
+title: Update on Old Projects
+tags: haskell personal
+---
+
+All though most people I talk to know me for my blog, I do
+occasionally actually write software instead of just talking about it
+:)
+
+Sadly, as a mercurial user most of my stuff has languished with on
+bitbucket. I've had a few people tell me that this is annoying for
+various reasons. Yesterday, I finally got around to fixing that!
+
+As of yesterday, all of my interesting projects are mirrored on
+[github][my-github]. I'm still using mercurial but thanks to the
+lovely git-hg tool this is not an issue. You can fork, pull-request,
+or generally peek and poke as you please. From my end all of these
+actions look like nice mercurial changesets so I can continue to live
+under my rock where I don't need to understand Git.
+
+As a quick list of what haskell code is up there now
+
+ - [c-dsl][c-dsl]
+ - [c_of_scheme][c_of_scheme]
+ - [ds-kanren][ds-kanren]
+ - [generic-church][generic-church]
+ - [hasquito][hasquito]
+ - [hlf][hlf]
+ - [monad-gen][monad-gen]
+ - [reified-records][reified-records]
+ - [this blog][that-blog]
+
+Which I think includes every project I've blogged about here as well
+as a few others. Sorry it took so long!
+
+[c-dsl]: http://github.com/jozefg/c-dsl
+[c_of_scheme]: http://github.com/jozefg/c_of_scheme
+[ds-kanren]: http://github.com/jozefg/ds-kanren
+[generic-church]: http://github.com/jozefg/generic-church
+[hasquito]: http://github.com/jozefg/hasquito
+[hlf]: http://github.com/jozefg/hlf
+[monad-gen]: http://github.com/jozefg/monad-gen
+[reified-records]: http://github.com/jozefg/reified-records
+[that-blog]: http://github.com/jozefg/blog
