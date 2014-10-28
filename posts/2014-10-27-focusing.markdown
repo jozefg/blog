@@ -106,6 +106,9 @@ remorselessly, we'd quickly end up in a divergent proof search.x
 
 ### An Actual Focused System
 
+*Do note that these typing rules are straight out of Rob Simmons'
+ paper, linked below*
+
 Now that we've actually seen some examples of invertible rules and
 polarized connectives, let's see how this all fits into a coherent
 system. There is one critical change we must make to the sttructure of
