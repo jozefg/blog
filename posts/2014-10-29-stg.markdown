@@ -133,11 +133,18 @@ of various expressions explicit and `let` was used to create a new
 thing to evaluate.
 
 Now we can see what those extra {}'s were for. They notate the free
-variables for a thunk. `dec` for example has a free variable `dec#`
-and it exists to box that result for the recursive call to
-factorial. We use `case` expressions to get evaluation. Most programs
-thus become chains of `case`'s and `let` alternating between creating
-thunks and actually doing work.
+variables for a thunk. Remember how we can have all sorts of closures
+and it can make for some really nice code? Well the machine doesn't
+exactly support those naively. What we need to do and note the
+variables that we close over explicitly and then generate code that
+will store these free variables with the value that closes over
+them. This pair is more or less what is called a "closure" for the
+rest of this post.
+
+`dec` for example has a free variable `dec#` and it exists to box that
+result for the recursive call to factorial. We use `case` expressions
+to get evaluation. Most programs thus become chains of `case`'s and
+`let` alternating between creating thunks and actually doing work.
 
 That `u` in between the {}'s in `dec` was also important. It's the
 update flag. Remember how in Haskell we don't want to force the same
