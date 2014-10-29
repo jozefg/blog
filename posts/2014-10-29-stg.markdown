@@ -38,7 +38,7 @@ something like
 In GHC case I understand the pipeline is something like
 
  1. Parsing
- 2. Typechecking
+ 2. Type checking
  3. Desugaring + a few bobs and bits
  4. Translation to core
  5. Lion share of optimization
@@ -90,7 +90,7 @@ be something like `+#` which adds to unboxed integers. To work with
 these we also have unboxed literals, `1#`, `2#`, so on and so on.
 
 No despite all these limitations placed on STG, it's still a pretty
-stinking highlevel language. There's letrec, higher order functions, a
+stinking high level language. There's letrec, higher order functions, a
 lot of the normal stuff we'd expect in a functional language. This
 means it's not actually to hard to compile something like Haskell or
 Core to STG (I didn't say "compile efficiently").
@@ -187,7 +187,7 @@ formal semantics for our language. We give these semantics a tuple of
 A code is more or less the current thing we're attempting to do. It's
 either
 
- 1. `Eval e p` - evaluate an expression in an environment
+ 1. `Eval e p` - evaluate an expression in an environment (`p`)
  2. `Enter a` - Enter a closure
  3. `ReturnCon c ws` - Return a constructor applied to some arguments
  4. `ReturnInt` - Return an integer
@@ -207,8 +207,8 @@ becomes
 That is to say, we just push the pattern matching on to the
 continuation stack and evaluate the expression.
 
-Presumably at some point we'll get to a "leaf" in our expression, some
-random literal or constructor. At this point we make use of our
+At some point we'll get to a "leaf" in our expression. That is random
+literal (a number) or constructor. At this point we make use of our
 continuation stack
 
     EVAL (C ws, p) as ((...; c vs -> expr; ...) : rs) us h o
@@ -396,3 +396,5 @@ If you have any suggestions for other links I'd love to add them!
 
 [wiki]: https://ghc.haskell.org/trac/ghc/wiki/Commentary/Compiler/GeneratedCode
 [paper]: http://research.microsoft.com/~simonpj/papers/spineless-tagless-gmachine.ps.gz
+
+*Thanks Chris Ganas for proof reading*
