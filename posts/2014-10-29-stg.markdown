@@ -24,7 +24,7 @@ spineless tagless graph machine which lies at the heart of GHC and a
 few other compilers.
 
 In this post, I'd like to go over how exactly the STG machine actually
-works.
+works. Turns out it's pretty cool!
 
 ### Core Concepts
 
@@ -44,7 +44,7 @@ In GHC case I understand the pipeline is something like
  5. Lion share of optimization
  6. Translation to STG language
  7. STG language to C--
- 8. C-- to assembly
+ 8. C-- to assembly or llvm
 
 We're really concerned with parts 6 and 7 here. First things first,
 let's lay out what's exactly in the STG language. It's a tiny
