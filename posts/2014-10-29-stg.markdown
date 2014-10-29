@@ -153,11 +153,11 @@ thunk twice. If I say
     let i = 1 + 1 in i + i
 
 We should only evaluate `1 + 1` once. That means that the thunk `i`
-will become has to do some updating. The update flag signifies the
-difference between thunks that we want to update and thunks that we
-don't. For example, if we replaced the thunk for `+` with the first
-result it returned, we'd be mighty surprised. Suddenly `1 + 1 + 1` is
-just 2!
+will have to be mutated to not evaluate `1 + 1` twice. The update flag
+signifies the difference between thunks that we want to update and
+thunks that we don't. For example, if we replaced the thunk for `+`
+with the first result it returned, we'd be mighty surprised. Suddenly
+`1 + 1 + 1` is just 2!
 
 The `u` flag says "yes, I'm just a normal expression that should be
 updated" and the n flag says the opposite.
