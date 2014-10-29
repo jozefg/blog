@@ -1,5 +1,5 @@
 ---
-title: The Guts of a Spineless [Tagless] G-Machine
+title: The Guts of a Spineless Machine
 tags: haskell
 ---
 
