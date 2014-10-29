@@ -1,17 +1,30 @@
 ---
 title: The Guts of a Spineless Machine
-tags: haskell
+tags: haskell, c
 ---
 
 It's fairly well known that Haskell is a bit um.. different then how
-stock hardware sees the world. As such, compiling Haskell (and indeed
-most functional languages) presents an interesting challenge. How do
-we go about mapping our lovely highlevel constructs to instructions
-without sacrificing efficiency? To this end something called the
-"spineless tagless G-machine" is employed by GHC and a few
-other functional languages to compile to stock hardware. In this post
-I'll go over some of the basic ideas behind STG, hopefully in the
-process you'll learn a bit about how Haskell is implemented.
+stock hardware sees the world. I'm not aware of too many processors
+that have decided that immutability and higher order functions are the
+right way to go.
+
+Compiling Haskell and its ilk, however, does have one interesting
+wrinkle on top of the normal problem: laziness. Laziness stands
+completely at odds with how most everything else works. More over,
+whether or not you think it's the write default its an interesting
+question of how to efficiently compile some evaluation strategy other
+than call by value or name.
+
+To this end, people have built a lot of abstract machines that lazy
+languages could target. The idea being that these machines can be
+mapped easily to what we want and transitively, we can get our
+compiler. Most of these work by "graph reduction" (that's the G in
+STG) and the latest incarnation of these graph machines is the
+spineless tagless graph machine which lies at the heart of GHC and a
+few other compilers.
+
+In this post, I'd like to go over how exactly the STG machine actually
+works.
 
 ### Core Concepts
 
@@ -80,7 +93,7 @@ No despite all these limitations placed on STG, it's still a pretty
 stinking highlevel language. There's letrec, higher order functions, a
 lot of the normal stuff we'd expect in a functional language. This
 means it's not actually to hard to compile something like Haskell or
-Core to STG (I didn't say "compile well").
+Core to STG (I didn't say "compile efficiently").
 
 As an example, let's look at translating factorial into STG
 language. We start with
@@ -102,16 +115,22 @@ on an atom
 
 Now comes the first big change, our boxed integers are going to get in
 the way here, so the case expression strips away the constructor
-leaving us with an unboxed integer.
+leaving us with an unboxed integer. We can similarly refactor the body
+to make evaluation order explicit
 
      case i of
-       MkInt i# -> case i# -# 1# of
+       MkInt i# ->
+         case i# -# 1# of
            dec# ->
              let dec = \{dec#} u {} -> MkInt dec#
              in case fact dec of
-             MkInt rest# -> case i# * rest# of
-               result# -> MkInt result#
+                  MkInt rest# ->
+                    case i# * rest# of
+                      result# -> MkInt result#
 
+Notice how the `case` expressions here are used to make the evaluation
+of various expressions explicit and `let` was used to create a new
+thing to evaluate.
 
 Now we can see what those extra {}'s were for. They notate the free
 variables for a thunk. `dec` for example has a free variable `dec#`
