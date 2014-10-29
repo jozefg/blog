@@ -11,14 +11,14 @@ right way to go.
 Compiling Haskell and its ilk, however, does have one interesting
 wrinkle on top of the normal problem: laziness. Laziness stands
 completely at odds with how most everything else works. More over,
-whether or not you think it's the write default its an interesting
+whether or not you think it's the right default it's an interesting
 question of how to efficiently compile some evaluation strategy other
 than call by value or name.
 
 To this end, people have built a lot of abstract machines that lazy
 languages could target. The idea being that these machines can be
-mapped easily to what we want and transitively, we can get our
-compiler. Most of these work by "graph reduction" (that's the G in
+mapped easily to what we hardware want and transitively, we can get
+our compiler. Most of these work by "graph reduction" (that's the G in
 STG) and the latest incarnation of these graph machines is the
 spineless tagless graph machine which lies at the heart of GHC and a
 few other compilers.
