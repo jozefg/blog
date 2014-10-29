@@ -184,7 +184,7 @@ formal semantics for our language. We give these semantics a tuple of
  6. The environment - A map from names to addresses of toplevel
     closures
 
-A code is more or less the current thign we're attempting to do. It's
+A code is more or less the current thing we're attempting to do. It's
 either
 
  1. `Eval e p` - evaluate an expression in an environment
@@ -294,7 +294,7 @@ our new, spiffy, updated closure
 
     h' = h[a -> ({vs} n {} -> c vs) ws]
 
-So that's what happens when we go to update an updateable closure. But
+So that's what happens when we go to update a closure. But
 what about partial application?
 
     Enter a as {} (asU, rs, aU) : us h o
