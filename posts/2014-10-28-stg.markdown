@@ -13,7 +13,7 @@ wrinkle on top of the normal problem: laziness. Laziness stands
 completely at odds with how most everything else works. More over,
 whether or not you think it's the right default it's an interesting
 question of how to efficiently compile some evaluation strategy other
-then call by value or name.
+than call by value or name.
 
 To this end, people have built a lot of abstract machines that lazy
 languages could target. The idea being that these machines can be
