@@ -1,5 +1,6 @@
-module Main where
 {-# LANGUAGE OverloadedStrings #-}
+module Main where
+
 import           Data.Monoid (mappend)
 import           Hakyll
 
