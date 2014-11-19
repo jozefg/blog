@@ -1,6 +1,6 @@
 ---
-title: F'd Up Recursion
-tags: Haskell
+title: Functors and Recursion
+tags: haskell
 ---
 
 One of the common pieces of folklore in the functional programming
@@ -13,26 +13,11 @@ we'll discuss some of the practical ramifications of such thoughts.
 
 ## Precursor
 
-Before we dive in, it's important to flesh out a vocabulary for
-talking about category theory as we care about it. The first thing to
-notice is that we define a category as a set of objects (I'll use `A`,
-`B`, and `C` to indicate them) and a set of arrows between such
-objects (I'll use `f`, `g`, and `h`). For each arrow we define
-`dom(f)` which gives the domain in `F` and `cod(f)` which gives the
-codomain.
+I'm assuming the reader is familiar with some basic notions from
+category theory. Specifically familiarity with the definitions of
+categories and functors.
 
-Further, there must be an arrow for each object, `idₐ`, so that
-`cod(idₐ) = dom(idₐ) = a` for each object `a`. There is also an
-operation `∘ : (B -> C) -> (A -> B) -> (A -> C)` which is associative
-and has `idₐ` as its unit.
-
-None of this should be earth shattering, but a little precision never
-hurt. Now we can define a functor `F : C → D` to be a map between two
-categories `C` and `D` so that `F` can map objects in `C` to objects
-in `D` and arrows in `C` to arrows in `D`. Further, for all
-`f : A → B` in `C`, `F f : F A → F B` and `F (f ∘ g) = F f ∘ F g`.
-
-Now from here we can talk about endofunctors, which are functors whose
+Let's talk about endofunctors, which are functors whose
 domain and codomain are the same.
 *spoiler: These are the ones we care about in Haskell*. An interesting
 notion that comes from endofunctors is that of algebras. An algebra in
@@ -98,10 +83,10 @@ Commutes only for a unique λ.
 *What's the problem?*
 
 Now, remembering that we're actually trying to understand recursive
-types, let's circle back to thinking of those. We can think of
-recursive types as solutions to certain equations. In fact, our types
-are what are called the *least fixed point* solutions. Let's say we're
-looking at `IntList`. We can imagine it defined as
+types, how can we fit the two together? We can think of recursive
+types as solutions to certain equations. In fact, our types are what
+are called the *least fixed point* solutions. Let's say we're looking
+at `IntList`. We can imagine it defined as
 
 ``` haskell
     data IntList = Cons Int IntList | Nil
@@ -116,7 +101,9 @@ We can in fact, factor out the recursive call in `Cons` and get
 
 Now we can represent a list of length 3 as something like
 
+``` haskell
     type ThreeList = IntList (IntList (IntList Void))
+```
 
 Which is all well and good, but we really want arbitrary length
 list. We want a solution to the equation that
@@ -128,11 +115,16 @@ ThreeList ... }`. Now how can we actually go about saying this? Well
 we need to take a fixed point of the equation! This is easy enough in
 Haskell since Haskell's type system is unsound.
 
+``` haskell
+    -- Somewhere, somehow, a domain theorist is crying.
     data FixedPoint f = Fix {unfix :: f (FixedPoint f)}
+```
 
 Now we can regain our normal representation of lists with
 
+``` haskell
     type List = FixedPoint IntList
+```
 
 To see how this works
 
@@ -159,7 +151,7 @@ Now we consider what the initial object in this category would be.
 It'd be something `I` so that we have a function
 
 ``` haskell
-    cata :: Listalg a -> (I -> a)
+    cata :: Listalg a -> (I -> a) -- Remember that I -> a is an arrow in F-Alg
     cata :: (List a -> a) -> I -> a
     cata :: (Either () (a, Int) -> a) -> I -> a
     cata :: (() -> a) -> ((a, Int) -> a) -> I -> a
@@ -191,6 +183,8 @@ To confirm this, let's generalize a few of our definitions from before
     cata f = f . fmap (cata f) . unfix
 ```
 
+*Exercise, draw out the reduction tree for `cata` on lists*
+
 Our suspicion is confirmed, the fixed point of an functor is indeed
 the initial object. Further more, we can easily show that initial
 objects are unique up to isomorphism (exercise!) so anything that can
@@ -205,7 +199,9 @@ about recursive types, how can we use this knowledge? Well let's start
 with a few things, first is that we can define a truly generic fold
 function now:
 
+``` haskell
     fold :: Functor f => (f a -> a) -> Fix f -> a
+```
 
 This delegates all the messy details of how one actually thinks about
 handling the "shape" of the container we're folding across by
@@ -223,13 +219,17 @@ games. How can we capture this with `cata`?
 We'd imagine that the folding functions for such a scenario would have
 the type
 
+``` haskell
     f (a, b) -> a
     f (a, b) -> b
+```
 
 From here we can build
 
+``` haskell
     muto :: (f (a, b) -> a) -> (f (a, b) -> b) -> Fix f -> (a, b)
     muto f g = cata ((,) <$> f <*> g)
+```
 
 Similarly we can build up [oodles][rec-scheme] of combinators for
 dealing with folding all built on top of `cata`!
@@ -240,13 +240,12 @@ particular, the package `recursion-schemes` has built up a nice little
 library for dealing with initial algebras. There's only one big twist
 between what we've laid out and what it does.
 
-One of the bigger stumbling blocks for our library was factoring out
-the nice recursive definition for types that we write into the
-somewhat unnatural contortion of the functorfied version. Really it's
-not realistic to write all your types this way. To help simplify the
-process `recursion-schemes` provides a type family called `Base` which
-takes a type and returns its functorfied version. We can imagine
-something like
+One of the bigger stumbling blocks for our library was changing the
+nice recursive definition of a type into the functorfied
+version. Really it's not realistic to write all your types this
+way. To help simplify the process `recursion-schemes` provides a type
+family called `Base` which takes a type and returns its functorfied
+version. We can imagine something like
 
 ``` haskell
     data instance Base [a] b = Cons a b | Nil
