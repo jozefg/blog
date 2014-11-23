@@ -1,16 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
+import Data.Monoid (mappend)
+import Hakyll
 
-import           Data.Monoid (mappend)
-import           Hakyll
-
+feedConfiguration :: FeedConfiguration
 feedConfiguration =
   FeedConfiguration { feedTitle = "Code and Co"
                     , feedDescription = "Articles on functional programming, PLT, types, and other geekery"
                     , feedAuthorName = "Danny Gratzer"
                     , feedAuthorEmail = "danny.gratzer@gmail.com"
                     , feedRoot        = "http://jozefg.bitbucket.org"}
---------------------------------------------------------------------------------
+
 main :: IO ()
 main = hakyll $ do
     match "images/*" $ do
@@ -25,7 +25,7 @@ main = hakyll $ do
         route   idRoute
         compile compressCssCompiler
 
-    match (fromList ["about.markdown", "contact.markdown"]) $ do
+    match (fromList ["about.md", "contact.md"]) $ do
         route   $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
@@ -103,7 +103,6 @@ main = hakyll $ do
             loadAllSnapshots "posts/*" "content"
         renderAtom feedConfiguration feedCtx posts
 
---------------------------------------------------------------------------------
 postCtx :: Context String
 postCtx =
     dateField "date" "%B %e, %Y" `mappend`
