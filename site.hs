@@ -16,6 +16,9 @@ main = hakyll $ do
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
+    match "resume.html" $ do
+      route idRoute
+      compile  copyFileCompiler
 
     match "favicon.ico" $ do
         route   idRoute
