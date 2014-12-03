@@ -16,9 +16,12 @@ main = hakyll $ do
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
+
     match "resume.html" $ do
+      let cxt = constField "title" "" `mappend` defaultContext
       route idRoute
-      compile  copyFileCompiler
+      compile $ getResourceBody
+        >>= loadAndApplyTemplate "templates/default.html" cxt
 
     match "favicon.ico" $ do
         route   idRoute
