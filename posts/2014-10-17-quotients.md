@@ -1,6 +1,6 @@
 ---
 title: Notes on Quotients Types
-tags: types
+tags: types, notes
 ---
 
 Lately I've been reading a lot of type theory literature. In effort

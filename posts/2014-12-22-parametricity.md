@@ -1,6 +1,6 @@
 ---
 title: Notes on Parametricity
-tags: types
+tags: types, notes
 ---
 
 I like types. If you haven't figured this out from my blog I really

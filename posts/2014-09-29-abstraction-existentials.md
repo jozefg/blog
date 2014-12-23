@@ -1,6 +1,6 @@
 ---
 title: Notes on Abstract and Existential Types
-tags: haskell, types
+tags: haskell, types, notes
 ---
 
 I'm part of a paper reading club at CMU. Last week we talked about a
