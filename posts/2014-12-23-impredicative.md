@@ -83,7 +83,7 @@ impredicativity with
       ScopedLens {getScopedLens :: Lens s t a b}
 ```
 
-This means that instead of impredicative types we just eed rank N
+This means that instead of impredicative types we just need rank N
 types, which are much more polished.
 
 ## Wrap Up
