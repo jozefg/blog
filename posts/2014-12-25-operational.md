@@ -6,8 +6,8 @@ tags: haskell
 In this installment of "jozefg is confused by other people's code" we
 turn to `operational`. This is a package that's a little less known
 than I'd like. It provides a monad for transforming an ADT of
-instructions a monad that can be used with `do` notation and separates
-out interpenetration.
+instructions, a monad that can be used with `do` notation and separates
+out interpretation.
 
 Most people familiar with free monads are wondering what the
 difference is between operational's approach and using
@@ -41,7 +41,7 @@ in how `Program` works. Looking at this, we see that it's just a synonym
     type Program instr = ProgramT instr Identity
 ```
 
-Just like the mtl, this is defined in terms of a it's transformer. So
+Just like the mtl, this is defined in terms of a transformer. So
 what's this transformer?
 
 ``` haskell
@@ -171,7 +171,7 @@ instances. The last interesting functions is `interpretWithMonad`
         eval (m :>>= k) = f m >>= interpretWithMonad f . k
 ```
 
-This nicely highlights how to you're supposed to write an interpreter
+This nicely highlights how you're supposed to write an interpreter
 for a `Program`. `eval` handles the two cases of the `view` using the
 mapping to a monad we provided and `view` handles actually compiling
 the program into these two cases. All in all, not too shabby.
