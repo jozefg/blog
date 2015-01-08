@@ -99,9 +99,10 @@ And now all of this leads to
     sieve n = runST $ do
       vec <- new (n + 1) -- Create the mutable vector
       set vec True       -- Set all the elements to True
+      write vec 1 False  -- One isn't a prime
       forM_ [2..n] $ \ i -> do -- Loop for i from 2 to n
         val <- read vec i -- read the value at i
-        when val $ -- if the value is true, set all it's multiples to false
+        when val $ -- if the value is true, set all its multiples to false
           forM_ [2*i, 3*i .. n] $ \j -> write vec j False
       freeze vec -- return the immutable vector
 ```
