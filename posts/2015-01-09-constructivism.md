@@ -90,9 +90,21 @@ of Brouwer's intuitionism that we're trying to capture.
 
 There are a lot of different incarnations of constructive logic, in
 fact pretty much every logic has a constructive cousin. They all share
-this notion of "We need a direct proof to be true" however. I
-encourage the curious reader to poke further at this, it's rather cool
-math.
+this notion of "We need a direct proof to be true" however. One thing
+to note that is that some constructive logics conflict a bit with
+intuitionism. In particular some of these logics add axioms that
+conflict with the idea that "we only know what we have a proof
+for". While intuitionism might have provided some of the basis for
+constructive logics gradually people have poked and pushed the
+boundaries away from *just* Brouwer's intuitionism.  For example both
+Markov's principle and Church's thesis state something about *all*
+computable functions. While they may be reasonable statements we can't
+give a satisfactory proof for them. This is a little confusing I know
+and I'm only going to talk about constructive logics that Brouwer
+would approve of.
+
+I encourage the curious reader to poke further at this, it's rather
+cool math.
 
 ## Who on Earth Cares?
 
@@ -104,8 +116,9 @@ all use it already.
 To better understand this, let's talk about the Curry-Howard
 isomorphism. It's that thing that wasn't really invented by either
 Curry or Howard and some claim isn't best seen as an isomorphism,
-naming is hard. It states that there's a mapping from a type to a
-logical proposition and from a program to a proof.
+naming is hard. The Curry-Howard isomorphism states that there's a
+mapping from a type to a logical proposition and from a program to a
+proof.
 
 To show some of the mappings for types
 
@@ -130,6 +143,7 @@ Under the Curry Howard isomorphism, ∃ is mapped to existential types
 `∃x. A(x)` is something like
 
 ``` haskell
+    -- Haskell ex. syntax is a bit gnaryl :/
     data Exists f = forall x. Exists f x
 
     ourProof :: Exists F
@@ -218,3 +232,5 @@ heard. Constructive mathematics has found a home in automated proof
 systems. Imagine Brouwer's horror at hearing we do "intuitionist"
 proofs that no one will ever look at or try to understand beyond some
 random mechanical proof assistant!
+
+*Thanks to Jon Sterling and Darryl McAdam's for the advice and insight*
