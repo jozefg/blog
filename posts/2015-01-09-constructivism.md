@@ -40,8 +40,9 @@ to accept proofs built off of these axioms.
 
 Now after Brouwer started talking about these ideas Arend Heyting
 decided to try to write down a logic that captured this notion of
-"proof is intuition". The result was this thing called constructive
-logic.
+"proof is intuition". The result was this thing called intuitionistic
+logic. This logic is part of a broader family of logics called
+"constructive logics".
 
 ## Constructive Logic
 
@@ -92,10 +93,8 @@ There are a lot of different incarnations of constructive logic, in
 fact pretty much every logic has a constructive cousin. They all share
 this notion of "We need a direct proof to be true" however. One thing
 to note that is that some constructive logics conflict a bit with
-intuitionism. In particular some of these logics add axioms that
-conflict with the idea that "we only know what we have a proof
-for". While intuitionism might have provided some of the basis for
-constructive logics gradually people have poked and pushed the
+intuitionism. While intuitionism might have provided some of the basis
+for constructive logics gradually people have poked and pushed the
 boundaries away from *just* Brouwer's intuitionism.  For example both
 Markov's principle and Church's thesis state something about *all*
 computable functions. While they may be reasonable statements we can't
@@ -173,7 +172,7 @@ construct but we're not sure which since we have to be able to
 actually run this program! If we evaluate a program with the type
 `Either a b` we're guaranteed to get either `Left a` or `Right b`.
 
-## The "Negative" Definition of Constructive Logic
+## The Self-Sacrificing Definition of Constructive Logic
 
 There are a few explanations of constructive logic that basically
 describe it as "Classical logic - the law of excluded middle". More
@@ -217,6 +216,18 @@ we have to use `(a -> Void) -> Void` which means we have to build an
 supplied `a` however so we're completely stuck! The story is similar
 with `lem`.
 
+In a lot of ways this definition strikes me as a bit off for the same
+reason that defining functional programming as
+
+> Oh it's just programming where you don't have variables or objects.
+
+Or static typing as
+
+> It's just dynamic programming where you can't write certain correct
+> programs
+
+Is a little misleading :)
+
 ## Wrap Up
 
 Hopefully this helps clarify what exactly people mean when they say
@@ -233,4 +244,4 @@ systems. Imagine Brouwer's horror at hearing we do "intuitionist"
 proofs that no one will ever look at or try to understand beyond some
 random mechanical proof assistant!
 
-*Thanks to Jon Sterling and Darryl McAdam's for the advice and insight*
+*Thanks to Jon Sterling and Darryl McAdams for the advice and insight*
