@@ -32,7 +32,7 @@ truthfulness. It's merely a serialization of my thought process for
 validating its truthfulness.
 
 Notice that this line of reasoning doesn't actually specify a precise
-definition of what verifying something intuitively means. I interprets
+definition of what verifying something intuitively means. I interpret
 this idea as something slightly more meta then any single formal
 system. Rather, when looking a formal system, you ought to verify that
 its axioms are admissible by your own intuition and then you may go on
@@ -53,28 +53,46 @@ know about it.
 In our new constructive system, a formula cannot be assigned either
 until we have direct evidence of it. It's not that there's a magical
 new boolean value, {true, false, i-don't-know}, it's just not a
-meaningful question to ask.
+meaningful question to ask. It doesn't make sense in these logics to
+say "`A` is true" without having a proof of `A`. There isn't
+necessarily this Platonic notion of truthfulness, just things we as
+logicians can prove. This is sometimes why constructive logic is
+called "logic for humans".
 
-The upshot of these can be boiled down two ways. We now know that
+The consequences of dealing with things in this way can be boils down
+to a few things. For example, we now know that
 
  1. If `∃x. A(x)` can be proven, then there is some term *which we can
     readily produce* `t` so that `A(t)` is provable
  2. If `A ∨ B` can be proven then either `A` or `B` is provable and we
     know which. (note that ∨ is the symbol for OR)
 
-If you want to think about this negatively, we lose
+These make sense when you realize that `∃x. A(x)` can only be proven if
+we have a direct example of it. We can't indirectly reason that it
+really ought to exist or merely claim that it must be true in one of a
+set of cases. We actually need to introduce it by proving an example of
+it. When our logic enforces this of course we can produce that
+example!
 
- 1. `∀ A. A ∨ ¬ A` being provable (the law of excluded middle, LEM)
- 2. `∀ A. ¬ (¬ A) → A` being provable (the law of double negation)
+The same goes for `A ∨ B`, in our logic the only way to prove
+`A ∨ B` is to either provide a proof of `A` or provide a proof of
+`B`. If this is the only way to build a `∨` we can always just point
+to how it was introduced!
 
-I carefully chose the words "being provable" because we can easily
-introduce these as a hypothesis to a proof and still have a sound
-system. Indeed this is not uncommon when working in Coq or
-Agda. They're just not a readily available tool.
+If we extend this to and, `∧`: The only way to prove `A ∧ B` is to
+prove both `A` and `B`. If this is the only way to get to a proof of
+`A ∧ B` then of course we can get a proof of `A` from `A ∧ B`. `∧` is
+just behaving like a pair of proofs.
+
+All of this points at one thing: our logic is structured so that we
+can only prove something when we directly prove it, that's the spirit
+of Brouwer's intuitionism that we're trying to capture.
 
 There are a lot of different incarnations of constructive logic, in
 fact pretty much every logic has a constructive cousin. They all share
-this notion of "We need a direct proof to be true" however.
+this notion of "We need a direct proof to be true" however. I
+encourage the curious reader to poke further at this, it's rather cool
+math.
 
 ## Who on Earth Cares?
 
@@ -84,8 +102,10 @@ reason why computer science cares about constructivism is because we
 all use it already.
 
 To better understand this, let's talk about the Curry-Howard
-isomorphism. It states that there's a mapping from a type to a logical
-proposition and from a program to a proof.
+isomorphism. It's that thing that wasn't really invented by either
+Curry or Howard and some claim isn't best seen as an isomorphism,
+naming is hard. It states that there's a mapping from a type to a
+logical proposition and from a program to a proof.
 
 To show some of the mappings for types
 
@@ -139,9 +159,30 @@ construct but we're not sure which since we have to be able to
 actually run this program! If we evaluate a program with the type
 `Either a b` we're guaranteed to get either `Left a` or `Right b`.
 
-What about the more negative consequences of constructivism? We
-supposed to through out double negation and LEM. In programming terms
-saying we're constructivist means we can't write these two functions.
+## The "Negative" Definition of Constructive Logic
+
+There are a few explanations of constructive logic that basically
+describe it as "Classical logic - the law of excluded middle". More
+verbosely, a constructive logic is just one that forbids
+
+ 1. `∀ A. A ∨ ¬ A` being provable (the law of excluded middle, LEM)
+ 2. `∀ A. ¬ (¬ A) → A` being provable (the law of double negation)
+
+I carefully chose the words "being provable" because we can easily
+introduce these as a hypothesis to a proof and still have a sound
+system. Indeed this is not uncommon when working in Coq or
+Agda. They're just not a readily available tool. Looking at them, this
+should be apparent as they both let us prove something without
+directly proving it.
+
+This isn't really a defining aspect of constructivism, just a natural
+consequence. If we need a proof of `A` to show `A` to be true if we
+admit `A ∨ ¬ A` by default it defeats the point. We can introduce `A`
+merely by showing `¬ (¬ A)` which isn't a proof of `A`! Just a proof
+that it really ought to be true.
+
+In programming terms this is saying we can't write these two
+functions.
 
 ``` haskell
     data Void
@@ -159,24 +200,8 @@ it. Constructing an arbitrary `a` without the function is just
 equivalent to `forall a. a` which we know to be unoccupied. That means
 we have to use `(a -> Void) -> Void` which means we have to build an
 `a -> Void`. We have no way of doing something interesting with that
-supplied `a` however so we're completely stuck!
-
-The way this is implemented in classical logic is to notice that each
-proposition is either `⊤` or `⊥`. If it's `⊤` then we can trivially
-construct it and if it's `⊥` then we can just pass `id` into the
-supplied function! Clearly such a program breaks parametricity since
-we're not allowed to do so much inspection of universally quantified
-types. Further more, there's no way that such an operation could be
-natural with respect to the whole universe of types in our programming
-language since at best it's returning random occupants of each type.
-
-The story is similar with `lem`. `lem` must always return `Left ...`
-or `Right ...` since it cannot inspect the `a` it's quantifying
-over. However, since we have at least one type that's occupied and one
-that's not, `lem` would have to return the wrong answer in some
-cases. In fact, with fancier types we can show that a constructive
-proof of `lem` would function as an oracle to the halting problem
-(left as an exercise to the reader).
+supplied `a` however so we're completely stuck! The story is similar
+with `lem`.
 
 ## Wrap Up
 
