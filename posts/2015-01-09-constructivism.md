@@ -216,17 +216,17 @@ we have to use `(a -> Void) -> Void` which means we have to build an
 supplied `a` however so we're completely stuck! The story is similar
 with `lem`.
 
-In a lot of ways this definition strikes me as a bit off for the same
-reason that defining functional programming as
+In a lot of ways this definition strikes me in the same way that
+describing functional programming as
 
 > Oh it's just programming where you don't have variables or objects.
 
 Or static typing as
 
-> It's just dynamic programming where you can't write certain correct
-> programs
+> It's just dynamic typed programming where you can't write certain
+> correct programs
 
-Is a little misleading :)
+I have a strong urge to say "Well.. yes but no!".
 
 ## Wrap Up
 
