@@ -162,7 +162,7 @@ produce this term as well!
 We can always access the specific "witness" we used to construct this
 `Exists` type with pattern matching.
 
-The next law is similar. If we have a proof of `a ∧ b` we're supposed
+The next law is similar. If we have a proof of `a ∨ b` we're supposed
 to immediately be able to produce a proof of `a` or a proof of `b`.
 
 In programming terms, if we have a program `Either a b` we're supposed
