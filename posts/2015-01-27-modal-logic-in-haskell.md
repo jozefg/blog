@@ -66,13 +66,17 @@ propositions
       | P ⇒ P
       | □ P
 
-where everything looks quite normal up until the last proposition
-form, which is the "box" modality applied to some proposition.
+This is the syntax of a particular modal logic with one
+modality. Everything looks quite normal up until the last
+proposition form, which is the "box" modality applied to some
+proposition.
 
 The box modality (the one we really care about for later) means
 "necessarily". I almost think of it is a truthier truth if you can buy
 that. □ forbids us from using any hypotheses saying something like
-`A is true` inside of it. The rule for creating a box looks like this
+`A is true` inside of it. Since it represents a higher standard of
+proof we can't use the weaker notion that `A is true`! The rule for
+creating a box looks like this to the first approximation
 
      • ⊢ A
     ———————
@@ -113,6 +117,10 @@ class entitled "Modal Logic". These actually go at a reasonable pace
 and introduce the groundwork for someone who isn't super familiar
 with logic.
 
+Now that we've established that there is an interesting theoretical
+backing for modal logic, I'm going to drop it on the floor and look at
+what Haskell actually gives us.
+
 ## That "Who Cares" Bit
 
 Okay, so how does this pertain to `StaticPtr`? Well I noticed that
@@ -129,9 +137,12 @@ to notate staged computation for example.
 Alas however, it was not to be. Static pointers are missing one
 essential component that makes them unsuitable for being □, we can't
 eliminate them properly. In modal logic, we have a rule that lets
-other boxes depend on the contents of some box. With static pointers
-there isn't a notion that we can take one static pointer and use it in
-another.
+other boxes depend on the contents of some box. The elimination rule
+is much stronger than just "If you give me a `□ A`, I'll give you an
+`A`" because it's much harder to construct a `□ A` in the first place!
+It's this asymmetry that makes static pointers not quite kosher. With
+static pointers there isn't a notion that we can take one static
+pointer and use it in another.
 
 For example, we can't write
 
@@ -167,7 +178,8 @@ runtime code generation which is a no-no for Haskell.
 My next thought was that maybe `Closure` was the answer, but that
 doesn't actually work either! We can introduce a closure from an
 arbitrary serializable term which is exactly what we *don't* want from
-a model of □!
+a model of □! Remember, we want to model closed terms so allowing us
+to accept an arbitrary term defeats the point.
 
 It's painfully clear that `StaticPtr`s are very nearly □s, but not
 quite! Whatever `Box` ends up being, we'd want the following interface
