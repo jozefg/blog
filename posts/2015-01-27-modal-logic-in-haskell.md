@@ -242,8 +242,18 @@ I've stuck the code at [jozefg/modal](http://github.com/jozefg/modal)
 if you want to play with it. Fair warning that it only compiles with
 GHC >= 7.10 because we need static pointers.
 
+Finally, since the idea of modalities for sendable code is not a new
+one, I should leave these links
+
+ - [Tom Murphy VII's PHD on the subject][murphy]
+ - [A much shorter paper on the same][paper]
+ - [Using modalities indicate staging][stage]
+
 Cheers.
 
 [tutorial]: https://ocharles.org.uk/blog/guest-posts/2014-12-23-static-pointers.html
 [lectures]: http://www.cs.cmu.edu/~fp/courses/15816-s10/
 [why-constructive]: /posts/2015-01-09-constructivism.html
+[murphy]: http://www.cs.cmu.edu/~tom7/papers/modal-types-for-mobile-code.pdf
+[paper]: http://www.cs.cmu.edu/~rwh/papers/s5/short.pdf
+[stage]: http://www.cs.cmu.edu/~fp/papers/popl96.pdf
