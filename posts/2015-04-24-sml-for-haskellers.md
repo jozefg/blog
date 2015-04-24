@@ -148,18 +148,20 @@ of `r := false` is just `unit`, not `IO ()` or something.
 ## What Is SML Missing
 
 Aside from the obvious things, like SML being strict so it's missing pervasive
-lazy evaluation, the biggest gap I stumble across in SML is the lack of higher
-kinded polymorphism,
+lazy evaluation, SML is missing some things from Haskell.
+
+the biggest gap I stumble across in SML is the lack of higher kinded
+polymorphism:
 
     data Fix f = Fix (f (Fix f))
-    datatype 'f fix = Fix of ('f fix) 'f
+    datatype 'f fix = Fix of ('f fix) 'f (* Urk, syntax error *)
 
 Even applying a type variable is a syntax error! As this might suggest to you,
-SML's type system is much simpler than Haskell. It doesn't have a notion of type
-families, GADTs, fancy kinds, data type promotion, etc, etc. SML is really
-limited to the areas of the Haskell type system you'd be accustomed to after
-reading Learn You A Haskell! Just algebraic data types, functions, and
-polymorphism.
+SML's type system is much simpler than what we have in Haskell. It doesn't have
+a notion of type families, GADTs, fancy kinds, data type promotion, etc,
+etc. SML is really limited to the areas of the Haskell type system you'd be
+accustomed to after reading Learn You A Haskell! Just algebraic data types,
+functions, and polymorphism.
 
 Aside from this, SML doesn't have guards, nor a lot of syntactic sugar that
 Haskell has. A nice exception to this is lambda cases, which is written
@@ -178,17 +180,13 @@ occasionally awkward parenthesis is necessary. For example
 
 The parenthesis are mandatory.
 
-Finally, the reason why I haven't pulled up stakes and started writing only SML,
-SML's community isn't nearly as large as Haskell's. This means a corresponding
-lack of tooling and external libraries. This is a serious pain if you want to
-write something like a webserver. For some things, less so.
-
-SML has records (discussed later) but they don't have a functional updating
-operation. This is a pain to be honest. Also related, SML has a somewhat nasty
-habit of allowing for ad-hoc overloading in the way most languages do: certain
-expressions are "blessed" with unutterable types that must be inferred from
-context. There are only a few of these, `+`, `*`, and record accessors. I'm
-personally not a huge fan, but in practice this is almost never an issue.
+On the stranger side, SML has records (discussed later) but they don't have a
+functional updating operation. This is a pain to be honest. Also related, SML
+has a somewhat nasty habit of allowing for ad-hoc overloading in the way most
+languages do: certain expressions are "blessed" with unutterable types that must
+be inferred from context. There are only a few of these, `+`, `*`, and record
+accessors being among them. I'm personally not a huge fan, but in practice this
+is almost never an issue.
 
 Finally ML doesn't have Haskell-style type classes. I don't miss them, some
 people would.
@@ -199,7 +197,7 @@ Aside from the obvious things, like Haskell being lazy so it's missing pervasive
 eager evaluation, SML does have a couple of interesting things.
 
 Of course SML has actual modules. I've
-[explained a bit about them earlier](modules). This alone is reason enough to
+[explained a bit about them earlier][modules]. This alone is reason enough to
 write some ML. Additionally, SML has a saner notion of records. Records are a
 type in and of themselves. This means we can have something like
 
@@ -226,12 +224,13 @@ We can't apply `#firstName` to an expression of type `user`. It's ill-typed
 since `user` isn't a record, it has a constructor which *contains a
 record*. In order to apply `#firstName` we have to pattern match first.
 
-Finally, SML has a real, honest too goodness specification. In fact, SML is so
+Finally, SML has a real, honest to goodness specification. In fact, SML is so
 well specified it's been [completely mechanized][sml-in-twelf]. There is an
 actual mechanized proof that SML is typesafe. The practical up shot of this is
 that SML is rock solid. There's a definitive right answer to what a program
 should do and that answer is "whatever that one true implementation does". In
-fact, there are actually a lot of SML compilers. Two noteworthy ones
+fact, there are actually a lot of SML compilers and they're all reasonably
+compliant. Two noteworthy ones
 
  1. SML/NJ - An interactive system for SML. This provides a REPL and is what we
     use at CMU for our introduction to functional programming courses.
@@ -241,14 +240,14 @@ fact, there are actually a lot of SML compilers. Two noteworthy ones
 Since SML is fully standardized, I general develop with NJ and eventually feed
 the program into mlton if I intend the thing to run fast.
 
-Also, modules are freaking amazing, have I mentioned modules yet?
+Also, modules are amazing, have I mentioned modules yet?
 
 ## Wrap Up
 
 So now that we've gone through most of the basic syntactic constructs of SML,
-most ML code should be a cinch to read. This is great because there's some
-interesting pieces of ML code to read. In particular, these wonderful books are
-written with ML
+most ML code should be readable. This is great because there's some interesting
+pieces of ML code to read. In particular, these wonderful books are written with
+ML
 
  - Purely Functional Data Structures
  - Compiling With Continuations
@@ -257,8 +256,7 @@ written with ML
 I recommend all three of these books heartily. If you're looking to learn about
 compilers, the last one in particular is the best introduction I'm aware of. The
 second one is an in depth look at a trick for compiling strict functional
-language. All 3 are wonderful and are currently sitting beside me on my desk
-while I'm typing this.
+language.
 
 Other general books on ML if you decide you want to give SML a more serious look
 
