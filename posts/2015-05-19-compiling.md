@@ -48,7 +48,7 @@ correct. The process for checking that a program type checks involves following
 a bunch of rules of the form "A has type T if B has type T1 and C has
 type...". All of these rules together constitute the type system for our
 language. As an example, in Haskell `f a` has the type `T2` if `f` has the type
-`T1 -> T2` and `a` has the type `T2`.
+`T1 -> T2` and `a` has the type `T1`.
 
 There's a small wrinkle in this story though: most languages require some type
 inference. This makes things 10x harder because we have to figure the types of
@@ -129,6 +129,7 @@ Examples:
  - [My writeup][stg]
  - [ezyang's (better) writeup][ezyang]
  - [The paper][stock]
+ - [Another paper][curry]
 
 ## Code Generation
 
@@ -174,3 +175,4 @@ would like to see written about? (Just not parsing please)
 [stock]: http://research.microsoft.com/apps/pubs/default.aspx?id=67083
 [sdiehl]: http://www.stephendiehl.com/llvm/
 [ml]: http://www.cs.princeton.edu/~appel/modern/ml/
+[curry]: http://research.microsoft.com/en-us/um/people/simonpj/papers/eval-apply/index.htm
