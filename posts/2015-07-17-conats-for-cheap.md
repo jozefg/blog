@@ -4,7 +4,8 @@ tags: jonprl
 ---
 
 So as a follow up to my prior [tutorial on JonPRL][tutorial] I wanted
-to demonstrate a nice example of JonPRL being used to prove something
+to demonstrate a nice example of [JonPRL][jonprl] being used to prove
+something
 
  1. Interesting
  2. Unreasonably difficult in Agda or the like
@@ -685,3 +686,4 @@ then touching up the results*
 
 [tutorial]: /posts/2015-07-06-jonprl.html
 [howe]: http://www.nuprl.org/documents/Howe/EqualityinLazy.html
+[jonprl]: http://www.jonprl.org
