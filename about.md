@@ -7,7 +7,7 @@ title: About
 
 Hello,
 
-My name is Danny Gratzer, I am a freshman at Carnegie Mellon
+My name is Danny Gratzer, I am a sophomore at Carnegie Mellon
 University. I can be found haunting a coffee shop with a laptop and a
 cup of black coffee.
 
