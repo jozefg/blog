@@ -131,25 +131,31 @@ type, just something in `base`.
 
 `union`s let us define an absolutely critical admissible rule in our
 system. See JonPRL has this propositional reflection of the equality
-judgment, but it's non-negatable. By this I mean that if we have some
-`a` and `b` so that `a = b ∈ A` doesn't hold, we won't be able to
-prove `=(a; b; A) -> void`. See in order to prove such a thing we
-first have to prove that `=(a; b; A) -> void` is a type, which means
-proving that `=(a; b; A)` is a type.
+judgment and membership, but membership is non-negatable. By this I
+mean that if we have some `a` so that `a = a ∈ A` doesn't hold, we
+won't be able to prove `=(a; a; A) -> void`. See in order to prove
+such a thing we first have to prove that `=(a; b; A) -> void` is a
+type, which means proving that `=(a; a; A)` is a type.
 
 In order to prove that `=(a; b; A)` is a proposition we have to prove
-`a = b ∈ A` (this is a judgment). But this is just the same as proving
-`=(a; b; A)`! So `=(a; b; A)` is a proposition only if it's
-true. However, we can add a rule that says that `=(a; b; A)` is a
-proposition if `a = b ∈ (A ∪ base)`! This fixes our proposition
-because we can just prove that `=(a; b; base)`, something that may be
-true even if they're not equal in `A`. Before having a function take a
-`=(...)` was useless! The function is only even type-able if its
-domain was provably true so there was no point in taking it as an
-argument. With this rule we can prove that `=(<>; <>; nat)` is a
-proposition! Not a true one, but a well formed one. We can apply this
-special rule in JonPRL with `eq-eq-base` instead of just `eq-cd` like
-the rest of our equality rules.
+`=(a; a; A)`, `=(b; b; A)`, and `=(A; A; U{i})`. The process of
+proving these will actually also show that the corresponding
+judgments, `a ∈ A`, `b ∈ A`, and `A ∈ U{i}` hold.
+
+However, in the case that `a` and `b` are the same term this is just
+the same as proving `=(a; b; A)`! So `=(a; a; A)` is a proposition
+only if it's true. However, we can add a rule that says that `=(a; b;
+A)` is a proposition if `a = a ∈ (A ∪ base)` and similarly for `b`!
+This fixes our negatibility issue because we can just prove that `=(a;
+a; base)`, something that may be true even if `a` is not equal in
+`A`. Before having a function take a `member(...)` was useless
+(`member(a; A)` is just thin sugar for `=(a; a; A)`!  `member(a; A)`
+is a proposition if and only if `a = a ∈ A` holds, in other words,
+it's a proposition if and only if it's true! With this new rule, we
+can prove `member(a; A)` is a proposition if `A ∈ U{i}` and `a ∈
+base`, a much weaker set of conditions that are almost always true. We
+can apply this special rule in JonPRL with `eq-eq-base` instead of
+just `eq-cd` like the rest of our equality rules.
 
 ## The Main Result
 
