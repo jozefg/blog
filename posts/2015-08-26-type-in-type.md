@@ -77,7 +77,7 @@ with the following formation rule
 
      H ⊢ A : U{i}        H ⊢ f : base
      —————————————————————————————————
-          H ⊢ image(H; f) : U{i}
+          H ⊢ image(A; f) : U{i}
 
 So here `A` is a type and `f` is anything. Things are going to be
 equal `image` if we can prove that they're of the form `f w` and `f
