@@ -226,13 +226,13 @@ This is done with
     }.
 ```
 
-This is done using `csubst` which takes a `ceq` as its first argument
-and a "targeting". It then tries to replace each occurrence of the
-left side of the equality with the right. To find each occurrence the
-targeting maps a variable to each occurrence. We're allowed to use
-wildcards in the targeting as well. It also relegates actually proving
-things into a new subgoal. It's easy enough to prove so we demonstrate
-it with `aux {unfold <snd>; reduce; auto}`.
+The key here is `csubst`. It takes a `ceq` as its first argument and a
+"targeting". It then tries to replace each occurrence of the left side
+of the equality with the right. To find each occurrence the targeting
+maps a variable to each occurrence. We're allowed to use wildcards in
+the targeting as well. It also relegates actually proving the equality
+into a new subgoal. It's easy enough to prove so we demonstrate it
+with `aux {unfold <snd>; reduce; auto}`.
 
 We only need to apply this tactic after `eq-eq-base`, this applies
 that rule I mentioned earlier about proving equalities well formed in
@@ -248,11 +248,11 @@ into one more convenient package.
     }.
 ```
 
-One last tactic in this vein, this one to prove that `member(X; X) ∈
-U{i'}` is well formed. It starts by unfolding `member` into `=(=(X; X;
-X); =(X; X; X); U{i})` and then applying the new tactic. Then we do
-other things. These things aren't pretty. I suggest we just ignore
-them.
+There is one last tactic in this series, this one to prove that
+`member(X; X) ∈ U{i'}` is well formed (a type). It starts by unfolding
+`member` into `=(=(X; X; X); =(X; X; X); U{i})` and then applying the
+new tactic. Then we do other things. These things aren't pretty. I
+suggest we just ignore them.
 
 ``` jonprl
     Tactic impredicativity-wf-tac {
@@ -294,8 +294,9 @@ We now have the main subgoal
 
     [main] ⊢ not(member(U{i}; U{i}))
 
-We can start by unfold `not` and `implies`. This gives us something we
-can actually apply the `intro` tactic.
+We can start by unfold `not` and `implies`. Remember that `not` isn't
+a built in thing, it's just sugar. By unfolding it we get the more
+primitive form, something that actually apply the `intro` tactic to.
 
 ``` jonprl
     {
@@ -303,21 +304,25 @@ can actually apply the `intro` tactic.
     }
 ```
 
-Now we have two subgoals, one is the result of applying `intro`,
-namely we have a hypothesis `x : member(U{i}; U{i})`. The second
-subgoal is the "well-formedness" obligation. We have to prove that
-`member(U{i}; U{i})` is a type in order to apply the `intro`
-tactic. This is a crucial difference between Coq-like systems and
-these proof-refinement logics. The process of demonstrating that what
-you're proving is a proposition is intermingled with actually
-constructing the proof. In the case of `member(...)` propositions
-after all, the process is identical.
+Once unfolded, we'd get a goal along the lines of `member(U{i}; U{i})
+-> void`. We immediately apply `intro` to this though. Now we have two
+subgoals, one is the result of applying `intro`, namely we have a
+hypothesis `x : member(U{i}; U{i})` and a goal `void`. The second
+subgoal is the "well-formedness" obligation.
 
-This does mean we get these annoying well-formedness goals. They're
+We have to prove that `member(U{i}; U{i})` is a type in order to apply
+the `intro` tactic. This is a crucial difference between Coq-like
+systems and these proof-refinement logics. The process of
+demonstrating that what you're proving is a proposition is
+intermingled with actually constructing the proof. It means you get to
+apply all the normal mathematical tools you have for proving things to
+be true to prove that they're types. This gives us a lot of
+flexibility, but at the cost of sometimes annoying subgoals.  They're
 annotated with `[aux]` (as opposed to `[main]`). This means we can
 target them all at once using with the `aux` tactics.
 
-Our proof state is
+To summarize that whole paragraph as JonPRL would say it, our proof
+state is
 
     [main]
     1. x : member(U{i}; U{i})
@@ -325,7 +330,9 @@ Our proof state is
 
     [aux] ⊢ member(member(U{i}; U{i}); U{i'})
 
-Let's get rid of that subgoal using that `impredictivity-wf-tac`
+Let's get rid of that auxiliary subgoal using that
+`impredictivity-wf-tac`, this subgoal is in fact exactly what it was
+made for.
 
 ``` jonprl
     {
@@ -334,7 +341,7 @@ Let's get rid of that subgoal using that `impredictivity-wf-tac`
     }
 ```
 
-This handles that `[aux]` goal leaving us with just
+This picks off that `[aux]` goal leaving us with just
 
     [main]
     1. x : member(U{i}; U{i})
@@ -342,22 +349,29 @@ This handles that `[aux]` goal leaving us with just
 
 Now we need to prove some lemmas. They state that `Russell` is
 actually a type. This is possible to do here and only here because
-we'll need to actually use `x` in the process of proving these. We're
-going to use the `assert` tactic. This let's us state a term, prove it
-as a subgoal and use it as a hypothesis in the main goal. If you're
-logically minded, it's cut.
+we'll need to actually use `x` in the process of proving this. It's a
+very nice example of what explicitly proving well-formedness can give
+you! After all, the process of demonstrating Russell is a type is
+nontrivial and only true in this hypothetical context, rather than
+just hoping that JonPRL is clever enough to figure that out for itself
+we get to demonstrate it locally.
+
+We're going to use the `assert` tactic to get these lemmas. This lets
+us state a term, prove it as a subgoal and use it as a hypothesis in
+the main goal. If you're logically minded, it's cut.
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { impredicativity-wf-tac };
 
       assert [Russell ∈ U{i}] <russell-wf>;
     }
 ```
 
-This leaves us with two subgoals. The `aux` one being the assertion
-and the `main` one being allowed to assume it.
+The thing in `<>`s is the name it will get in our hypothetical context
+for the main goal. This leaves us with two subgoals. The `aux` one
+being the assertion and the `main` one being allowed to assume it.
 
     [aux]
     1. x : member(U{i}; U{i})
@@ -374,7 +388,7 @@ subgoal. We'll start by unfolding everything and applying `eq-cd`.
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { impredicativity-wf-tac };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -384,11 +398,14 @@ subgoal. We'll start by unfolding everything and applying `eq-cd`.
     }
 ```
 
+*Remember that `Russell` is `{x : U{i} | ¬ (x ∈ x)}`*
+
 So we just applied `eq-cd` to a subset type (`Russell`) so we get two
 subgoals. One says that `U{i}` is a type, one says that if `x ∈ U{i}`
-then `¬ (x ∈ x)` is also a type. The former goal is quite
-straightforward so we'll apply `auto` and take care of it. Now we have
-one new subgoal to handle
+then `¬ (x ∈ x)` is also a type. In essence this just says that a
+subset type is a type if both components are types. The former goal is
+quite straightforward so we applied `auto` and take care of it. Now we
+have one new subgoal to handle
 
     [main]
     1. x : =(U{i}; U{i}; U{i})
@@ -402,12 +419,12 @@ one new subgoal to handle
 
 The second subgoal is just the rest of the proof, the first subgoal is
 what we want to handle. It says that if we have a type `x` then
-`not(member(x; x))` is a type. To prove this we have to unfold
-`not`. So we'll do this and apply `eq-cd` again.
+`not(member(x; x))` is a type albeit in ugly notation. To prove this
+we have to unfold `not`. So we'll do this and apply `eq-cd` again.
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { impredicativity-wf-tac };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -418,7 +435,11 @@ what we want to handle. It says that if we have a type `x` then
     }
 ```
 
-This is
+Remember that `not(P)` desugars to `P -> void`. Applying `eq-cd` is
+going to give us two subgoals, `P` is a type and `void` is a
+type. However, `member(void; U{i})` is pretty easy to prove, so we
+apply `auto` again which takes care of one of our two new goals. Now
+we just have
 
     [main]
     1. x : =(U{i}; U{i}; U{i})
@@ -433,11 +454,11 @@ This is
 Now we're getting to the root of the issue. We're trying to prove that
 `member(x'; x')` is a type. This is happily handled by
 `impredicativity-wf-tac` which will use our assumption that `U{i} ∈
-U{i}`.
+U{i}` because it's smart like that.
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { impredicativity-wf-tac };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -457,13 +478,13 @@ added.
     2. russell-wf : member(Russell; U{i})
     ⊢ void
 
-Now we have a similar type well-formedness goal to prove. We want to
-prove that `∈(Russell; Russell)` is a type. This is easier though, we
-can prove it easily using `impredicativity-wf-tac`.
+Now we have a similar well-formedness goal to assert and prove. We
+want to prove that `∈(Russell; Russell)` is a type. This is easier
+though, we can prove it easily using `impredicativity-wf-tac`.
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { impredicativity-wf-tac };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -506,7 +527,7 @@ Here's the first assertion
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { impredicativity-wf-tac };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -544,7 +565,7 @@ Here are our subgoals
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -561,9 +582,9 @@ Here are our subgoals
     }
 ```
 
-Now our subgoals look like this
-
-    Remaining subgoals:
+Notice that the well-formedness goal that `intro` is handled by our
+assumption! After all, it's just `member(Russell; Russell) ∈ U{i}`, we
+already proved it. Now our subgoals look like this
 
     [main]
     1. x : member(U{i}; U{i})
@@ -591,14 +612,14 @@ pairs (here written `(x : A) * B(x)`).
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
       aux { ... };
 
       assert [(Russell ∈ Russell) ∈ U{i}] <russell-in-russell-wf>;
-      aux { impredicativity-wf-tac; cum @i; auto };
+      aux { ... };
 
       assert [¬ (Russell ∈ Russell)] <not-russell-in-russell>;
       aux {
@@ -613,19 +634,23 @@ pairs (here written `(x : A) * B(x)`).
 ```
 
 We've proven this by `intro`. For proving dependent products we
-provide an explicit witness for the first component. After this we
-have to prove that this witness has type `Russell` and then prove the
-second component holds. Happily, `auto` takes care of both of these
-obligation so `intro [Russell] @i; auto` handles it all.
+provide an explicit witness for the first component. Basically to
+prove `(x : A) * B(x)` we say `intro[Foo]`. We then have a goal
+`Foo ∈ A` and `B(Foo)`. Since subgoals are fully independent of each
+other, we have to give the witness for the first component
+upfront. It's a little awkward, Jon's working on it :)
 
+In this case we use `intro [Russell]`. After this we have to prove
+that this witness has type `Russell` and then prove the second
+component holds. Happily, `auto` takes care of both of these
+obligations so `intro [Russell] @i; auto` handles it all.
 
 Now we promptly eliminate this pair. It gives us two new facts, that
 `R : Russell` and `R ~ Russell` hold.
 
-
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -666,12 +691,12 @@ This leaves our goal as
     4. russell-not-in-russell : not(member(Russell; Russell))
     ⊢ void
 
-Now let's invert a little on that `s : Russell`, we want to use it to
-conclude that `¬ (s ∈ s)` holds since that will give us `¬ (R ∈ R)`.
+Now let's invert on that `s : Russell`, we want to use it to conclude
+that `¬ (s ∈ s)` holds since that will give us `¬ (R ∈ R)`.
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -689,7 +714,7 @@ conclude that `¬ (s ∈ s)` holds since that will give us `¬ (R ∈ R)`.
           intro [Russell] @i; auto
         };
 
-        elim <R-with-prop>; thin <R-with-prop>
+        elim <R-with-prop>; thin <R-with-prop>;
         unfold <Russell>; elim #5;
       }
     }
@@ -721,7 +746,7 @@ Now we use #7 to derive that `not(member(Russell; Russell))` holds.
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -739,10 +764,10 @@ Now we use #7 to derive that `not(member(Russell; Russell))` holds.
           intro [Russell] @i; auto
         };
 
-        elim <R-with-prop>; thin <R-with-prop>
+        elim <R-with-prop>; thin <R-with-prop>;
         unfold <Russell>; elim #5;
 
-        assert [¬ (Russell; Russell)];
+        assert [¬ member(Russell; Russell)];
         aux {
           unfold <Russell>;
         };
@@ -790,7 +815,7 @@ where to apply the substitution.
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -808,10 +833,10 @@ where to apply the substitution.
           intro [Russell] @i; auto
         };
 
-        elim <R-with-prop>; thin <R-with-prop>
+        elim <R-with-prop>; thin <R-with-prop>;
         unfold <Russell>; elim #5;
 
-        assert [¬ (Russell; Russell)];
+        assert [¬ member(Russell; Russell)];
         aux {
           unfold <Russell>;
           chyp-subst ← #8 [h. ¬ (h ∈ h)];
@@ -861,7 +886,7 @@ irrelevant). So just read what's left as a (very) convoluted
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -879,7 +904,7 @@ irrelevant). So just read what's left as a (very) convoluted
           intro [Russell] @i; auto
         };
 
-        elim <R-with-prop>; thin <R-with-prop>
+        elim <R-with-prop>; thin <R-with-prop>;
         unfold <Russell>; elim #5;
 
         assert [¬ (Russell; Russell)];
@@ -921,7 +946,7 @@ Once we unfold that `Russell` we have an immediate contradiction so
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -939,14 +964,14 @@ Once we unfold that `Russell` we have an immediate contradiction so
           intro [Russell] @i; auto
         };
 
-        elim <R-with-prop>; thin <R-with-prop>
+        elim <R-with-prop>; thin <R-with-prop>;
         unfold <Russell>; elim #5;
 
         assert [¬ (Russell; Russell)];
         aux {
           unfold <Russell>;
           chyp-subst ← #8 [h. ¬ (h ∈ h)];
-          unfold <not implies>
+          unfold <not implies>;
           intro; aux { impredicativity-wf-tac };
           contradiction
         };
@@ -973,7 +998,7 @@ isn't in `Russell` (yeah, it seems pretty paradoxical already).
 
 ``` jonprl
     {
-      unfold <not implies>; intro
+      unfold <not implies>; intro;
       aux { ... };
 
       assert [Russell ∈ U{i}] <russell-wf>;
@@ -1012,11 +1037,13 @@ that `not(Russell ∈ Russell)` and `Russell ∈ U{i}`, both of which we
 have as assumptions. The rest of the proof is just more
 well-formedness goals.
 
-Let's finish this off. First we unfold everything and apply
-`eq-cd`. This gives us 3 subgoals, the first two are `Russell ∈ U{i}`
-and `¬(Russell ∈ Russell)`. Since we have these as assumptions we'll
-use `main {assumption}`. That will target both these goals and prove
-them immediately.
+First we unfold everything and apply `eq-cd`. This gives us 3
+subgoals, the first two are `Russell ∈ U{i}` and `¬(Russell ∈
+Russell)`. Since we have these as assumptions we'll use `main
+{assumption}`. That will target both these goals and prove them
+immediately. Here by using `main` we avoid applying this to the
+well-formedness goal, which in this case actually *isn't* the
+assumption.
 
 ``` jonprl
     {
@@ -1049,7 +1076,8 @@ was well formed. The proof is the same as then, just unfold, `eq-cd`
 and `impredicativity-wf-tac`. We use `?{!{auto}}` to only apply `auto`
 in a subgoal where it immediately proves it. Here `?{}` says "run this
 or do nothing" and `!{}` says "run this, if it succeeds stop, if it
-does anything else, fail".
+does anything else, fail". This is not an interesting portion of the
+proof, don't burn too many cycles trying to figure this out.
 
 ``` jonprl
     {
@@ -1115,7 +1143,7 @@ need to do is apply `contradiction` and we're done.
 
 And there you have it, a complete proof of Russell's paradox fully
 formalized in JonPRL! We actually proved a slightly stronger result
-then just that the type of types cannot be in itself, we proved that
+than just that the type of types cannot be in itself, we proved that
 at any point in the hierarchy of universes (the first of which is
 `Type`/`*`/whatever) if you tie it off, you'll get a contradiction.
 
@@ -1124,7 +1152,8 @@ at any point in the hierarchy of universes (the first of which is
 I hope you found this proof interesting. Even if you're not at all
 interested in JonPRL, it's nice to see that allowing one to have
 `U{i} : U{i}` or `* :: *` gives you the ability to have a type like
-`Russell` and with it, `void`.
+`Russell` and with it, `void`. I also find it especially pleasing that
+we can prove something like this in JonPRL, it's growing up so fast.
 
 *Thanks to Jon for greatly improving the original proof we had*
 
