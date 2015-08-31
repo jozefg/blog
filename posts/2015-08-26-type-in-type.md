@@ -7,7 +7,7 @@ I was reading a [recent proposal][dep-haskell] to merge types and
 kinds in Haskell to start the transition to dependently typed
 Haskell. One thing that caught my eye as I was reading it was that
 this proposal adds `* :: *` to the type system. This is of some
-significance because it means that once this is fully realized Haskell
+significance because it means that once this is fully realized, Haskell
 will be inconsistent (as a logic) in a new way! Of course, this isn't
 a huge deal since Haskell is already woefully inconsistent with
 
@@ -24,7 +24,7 @@ already in for a rude awakening I'm afraid :)
 
 This is an issue of significance though for languages like Idris or
 Agda where such a thing would actually render proofs
-useless. Famously, Martin-Lof's original type theory did have `Type :
+useless. Famously, Martin-Löf's original type theory did have `Type :
 Type` (or `* :: *` in Haskell spelling) and Girard managed to derive a
 contradiction (Girard's paradox). I've always been told that the
 particulars of this construction are a little bit complicated but to
@@ -42,14 +42,14 @@ proof assistants this would work in two steps
  #-}` or whatever the flag is. The spirit of the development is the
  same though*
 
-In JonPRL I'm just going to prove this as a regular implication. We
+In JonPRL, I'm just going to prove this as a regular implication. We
 have a proposition which internalizes membership and I'll demonstrate
 `not(member(U{i}; U{i}))` is provable (`U{i}` is how we say `Type` in
 JonPRL). It's the same logic as we had before.
 
 ## Background on JonPRL
 
-Before we can really get to the proof we want to talk about we should
+Before we can really get to the proof we want to talk about, we should
 go through some of the more advanced features of JonPRL we need to
 use.
 
@@ -59,21 +59,20 @@ equality is purely computational. This type is `base`. To prove that
 `=(a; b; base)` holds you have to prove `ceq(a; b)`, the finest grain
 equality in JonPRL. Two terms are `ceq` if they
 
- 1. Both diverge
+ 1. Both diverge, or
  2. Run to the same outermost form and have `ceq` components
 
-What's particularly exciting is that you can substitute any term for
-any other term `ceq` to it, no matter at what type it's being used. In
-fact, the `reduce` tactic (which beta reduces terms) can conceptually
-be thought of as substituting a bunch of terms for their whn forms
-which are `ceq` to the original terms. The relevant literature behind
-this is found in Doug Howe's "Equality in a Lazy Computation
-System". There's more in JonPRL in this regard, we also have the
-asymmetric version of `ceq` (called `approx`) but we won't need it
-today.
+What's particularly exciting is that you can substitute any term for any other
+term `ceq` to it, no matter at what type it's being used and under what
+hypotheses. In fact, the `reduce` tactic (which performs beta reductions) can
+conceptually be thought of as substituting a bunch of terms for their
+weak-head-normal forms which are `ceq` to the original terms. The relevant
+literature behind this is found in Doug Howe's "Equality in a Lazy Computation
+System". There's more in JonPRL in this regard, we also have the asymmetric
+version of `ceq` (called `approx`) but we won't need it today.
 
 Next, let's talk about the image type. This is a type constructor
-with the following formation rule
+with the following formation rule:
 
      H ⊢ A : U{i}        H ⊢ f : base
      —————————————————————————————————
@@ -85,10 +84,10 @@ w'` where `w = w' ∈ A`. So `image` gives us the codomain (range) of a
 function. What's pretty crazy about this is that it's not just the
 range of some function `A → B`, we don't really need a whole new type
 for that. It's the range of *literally any closed term we can
-apply*. We can take the range of the y combinator over pi types. We
+apply*. We can take the range of the Y combinator over pi types. We
 can take the range of `lam(x. ⊥)` over `unit`, anything we want!
 
-This construct let's us define some really incredible things as a user
+This construct lets us define some really incredible things as a user
 of JonPRL. For example, the "squash" of a type is supposed to be a
 type which is occupied by `<>` (and only `<>`) if and only if there
 was an occupant of the original type. You can define these in HoTT
@@ -121,21 +120,21 @@ applying our function to this time is
 ```
 
 This is a dependent pair, sometimes called a Σ type. The first
-component is a boolean, if the first component is true the second
-component is of type `A`, otherwise it's of type `B`. So for every
+component is a boolean; if it is `true` the second
+component is of type `A`, and otherwise it's of type `B`. So for every
 term of type `A` or `B`, there's a term of this Σ type. In fact, we
 can recover that original term of type `A` or `B` by just grabbing the
 second component of the term! We don't have to worry about the type of
 such an operation because we're not creating something with a function
 type, just something in `base`.
 
-`union`s let us define an absolutely critical admissible rule in our
-system. See JonPRL has this propositional reflection of the equality
-judgment and membership, but membership is non-negatable. By this I
-mean that if we have some `a` so that `a = a ∈ A` doesn't hold, we
-won't be able to prove `=(a; a; A) -> void`. See in order to prove
-such a thing we first have to prove that `=(a; b; A) -> void` is a
-type, which means proving that `=(a; a; A)` is a type.
+`union`s let us define an absolutely critical admissible rule in our system.
+JonPRL has this propositional reflection of the equality judgment and
+membership, but in Martin-Löf's type theory, membership is non-negatable. By
+this I mean that if we have some `a` so that `a = a ∈ A` doesn't hold, we won't
+be able to prove `=(a; a; A) -> void`. See in order to prove such a thing we
+first have to prove that `=(a; b; A) -> void` is a type, which means proving
+that `=(a; a; A)` is a type.
 
 In order to prove that `=(a; b; A)` is a proposition we have to prove
 `=(a; a; A)`, `=(b; b; A)`, and `=(A; A; U{i})`. The process of
@@ -173,7 +172,7 @@ This let's us say `a ∈ b` instead of `member(a; b)`. JonPRL recently
 grew this ability to add transparent notation to terms, it makes our
 theorems a *lot* prettier.
 
-Next we define the central term to our proof
+Next we define the central term to our proof:
 
 ``` jonprl
     Operator Russell : ().
@@ -181,13 +180,13 @@ Next we define the central term to our proof
 ```
 
 Here we've defined `Russell` as shorthand for a subset type, in
-particular it's a subset of `U{i}` (the universe of types). `x ∈
+particular a subset of `U{i}` (the universe of types). `x ∈
 Russell` if `x ∈ U{i}` and `¬ (x ∈ x)`. Now normally we won't be able
 to prove that this is a type (specifically `x ∈ x` is going to be a
 problem), but in our case we'll have some help from an assumption that
 `U{i} ∈ U{i}`.
 
-Now we begin to define a small set of tactic that we'll want. These
+Now we begin to define a small set of tactics that we'll want. These
 tactics are really where the fiddly bits of using JonPRL's tactic
 system come into play. If you're just reading this for the intuition
 as to why `Type ∈ Type` is bad just skip this. You'll still understand
@@ -195,7 +194,7 @@ the construction even if you don't understand these bits of the proof.
 
 First we have a tactic which finds an occurrence of `H : A + B` in the
 context and eliminate it. This gives us two goals, one with an `A` and
-one with a `B`. To do this we use match, This gives us something like
+one with a `B`. To do this we use match, which gives us something like
 `match goal with` in Coq.
 
 ``` jonprl
@@ -241,7 +240,7 @@ into a new subgoal. It's easy enough to prove so we demonstrate it
 with `aux {unfold <snd>; reduce; auto}`.
 
 We only need to apply this tactic after `eq-eq-base`, this applies
-that rule I mentioned earlier about proving equalities well formed in
+that rule I mentioned earlier about proving equalities to be well-formed in
 a much more liberal environment. Therefore we wrap those two tactics
 into one more convenient package.
 
@@ -255,7 +254,7 @@ into one more convenient package.
 ```
 
 There is one last tactic in this series, this one to prove that
-`member(X; X) ∈ U{i'}` is well formed (a type). It starts by unfolding
+`member(X; X) ∈ U{i'}` is well-formed (a type). It starts by unfolding
 `member` into `=(=(X; X; X); =(X; X; X); U{i})` and then applying the
 new tactic. Then we do other things. These things aren't pretty. I
 suggest we just ignore them.
@@ -312,7 +311,7 @@ primitive form, something that actually apply the `intro` tactic to.
 
 Once unfolded, we'd get a goal along the lines of `member(U{i}; U{i})
 -> void`. We immediately apply `intro` to this though. Now we have two
-subgoals, one is the result of applying `intro`, namely we have a
+subgoals; one is the result of applying `intro`, namely a
 hypothesis `x : member(U{i}; U{i})` and a goal `void`. The second
 subgoal is the "well-formedness" obligation.
 
@@ -322,7 +321,7 @@ systems and these proof-refinement logics. The process of
 demonstrating that what you're proving is a proposition is
 intermingled with actually constructing the proof. It means you get to
 apply all the normal mathematical tools you have for proving things to
-be true to prove that they're types. This gives us a lot of
+be true in order to prove that they're types. This gives us a lot of
 flexibility, but at the cost of sometimes annoying subgoals.  They're
 annotated with `[aux]` (as opposed to `[main]`). This means we can
 target them all at once using with the `aux` tactics.
@@ -357,8 +356,8 @@ Now we need to prove some lemmas. They state that `Russell` is
 actually a type. This is possible to do here and only here because
 we'll need to actually use `x` in the process of proving this. It's a
 very nice example of what explicitly proving well-formedness can give
-you! After all, the process of demonstrating Russell is a type is
-nontrivial and only true in this hypothetical context, rather than
+you! After all, the process of demonstrating that `Russell` is a type is
+nontrivial and only possible in this hypothetical context, rather than
 just hoping that JonPRL is clever enough to figure that out for itself
 we get to demonstrate it locally.
 
@@ -375,7 +374,7 @@ the main goal. If you're logically minded, it's cut.
     }
 ```
 
-The thing in `<>`s is the name it will get in our hypothetical context
+The thing in angle brackets is the name it will get in our hypothetical context
 for the main goal. This leaves us with two subgoals. The `aux` one
 being the assertion and the `main` one being allowed to assume it.
 
@@ -406,7 +405,7 @@ subgoal. We'll start by unfolding everything and applying `eq-cd`.
 
 *Remember that `Russell` is `{x : U{i} | ¬ (x ∈ x)}`*
 
-So we just applied `eq-cd` to a subset type (`Russell`) so we get two
+We just applied `eq-cd` to a subset type (`Russell`), so we get two
 subgoals. One says that `U{i}` is a type, one says that if `x ∈ U{i}`
 then `¬ (x ∈ x)` is also a type. In essence this just says that a
 subset type is a type if both components are types. The former goal is
@@ -423,9 +422,9 @@ have one new subgoal to handle
     2. russell-wf : member(Russell; U{i})
     ⊢ void
 
-The second subgoal is just the rest of the proof, the first subgoal is
-what we want to handle. It says that if we have a type `x` then
-`not(member(x; x))` is a type albeit in ugly notation. To prove this
+The second subgoal is just the rest of the proof, and the first subgoal is
+what we want to handle. It says that if we have a type `x`, then
+`not(member(x; x))` is a type (albeit in ugly notation). To prove this
 we have to unfold `not`. So we'll do this and apply `eq-cd` again.
 
 ``` jonprl
@@ -486,7 +485,7 @@ added.
 
 Now we have a similar well-formedness goal to assert and prove. We
 want to prove that `∈(Russell; Russell)` is a type. This is easier
-though, we can prove it easily using `impredicativity-wf-tac`.
+though; we can prove it easily using `impredicativity-wf-tac`.
 
 ``` jonprl
     {
@@ -529,7 +528,7 @@ well-formedness lemmas. Our proof sketch is basically as follows
     holds.
  3. Hilarity ensues.
 
-Here's the first assertion
+Here's the first assertion:
 
 ``` jonprl
     {
@@ -550,7 +549,7 @@ Here's the first assertion
     }
 ```
 
-Here are our subgoals
+Here are our subgoals:
 
     [aux]
     1. x : member(U{i}; U{i})
@@ -588,7 +587,7 @@ Here are our subgoals
     }
 ```
 
-Notice that the well-formedness goal that `intro` is handled by our
+Notice that the well-formedness goal that `intro` generated is handled by our
 assumption! After all, it's just `member(Russell; Russell) ∈ U{i}`, we
 already proved it. Now our subgoals look like this
 
@@ -606,15 +605,20 @@ already proved it. Now our subgoals look like this
     4. russell-not-in-russell : not(member(Russell; Russell))
     ⊢ void
 
-So what we want to do is note that we've assume that `Russell ∈
-Russell` we can say that `Russell ~ X` for some `X` where `¬ (X ∈ X)`
-holds. But wait, that means that `¬ (Russell ∈ Russell)` holds but
-we've assume that `Russell ∈ Russell` also holds so we have a
-contradiction.
+Here's our clever plan
 
-Let's start by introducing that `X` (here called `R`). We'll assert an
-`R : Russell` such that `R ~ Russell`. We do this using dependent
-pairs (here written `(x : A) * B(x)`).
+ 1. Since `Russell ∈ Russell`, there's an `X : Russell` so that
+    `ceq(Russell; X)` holds
+ 2. Since `X : Russell`, we can unfold it to say that
+    `X : {x ∈ U{i} | ¬ (x ∈ x)}`
+ 3. We can apply the elimination principle for subset types to `X` and
+    derive that `¬ (X ∈ X)`
+ 4. Rewriting by `ceq(Russell; X)` gives `¬ (Russell; Russell)`
+ 5. Now we have a contradiction
+
+Let's start explaining this to JonPRL by introducing that `X` (here
+called `R`). We'll assert an `R : Russell` such that `R ~ Russell`. We
+do this using dependent pairs (here written `(x : A) * B(x)`).
 
 ``` jonprl
     {
@@ -641,10 +645,10 @@ pairs (here written `(x : A) * B(x)`).
 
 We've proven this by `intro`. For proving dependent products we
 provide an explicit witness for the first component. Basically to
-prove `(x : A) * B(x)` we say `intro[Foo]`. We then have a goal
+prove `(x : A) * B(x)` we say `intro [Foo]`. We then have a goal
 `Foo ∈ A` and `B(Foo)`. Since subgoals are fully independent of each
 other, we have to give the witness for the first component
-upfront. It's a little awkward, Jon's working on it :)
+upfront. It's a little awkward, Jon's [working on it](https://github.com/jonsterling/dependency-in-refinement-logics) :).
 
 In this case we use `intro [Russell]`. After this we have to prove
 that this witness has type `Russell` and then prove the second
@@ -697,7 +701,7 @@ This leaves our goal as
     4. russell-not-in-russell : not(member(Russell; Russell))
     ⊢ void
 
-Now let's invert on that `s : Russell`, we want to use it to conclude
+Now let's invert on the hypothesis that `s : Russell`; we want to use it to conclude
 that `¬ (s ∈ s)` holds since that will give us `¬ (R ∈ R)`.
 
 ``` jonprl
@@ -781,7 +785,7 @@ Now we use #7 to derive that `not(member(Russell; Russell))` holds.
     }
 ```
 
-This leaves us with 3 subgoals. The first one being the assertion.
+This leaves us with 3 subgoals, the first one being the assertion.
 
     [aux]
     1. x : member(U{i}; U{i})
@@ -813,10 +817,10 @@ This leaves us with 3 subgoals. The first one being the assertion.
     4. russell-not-in-russell : not(member(Russell; Russell))
     ⊢ void
 
-Now to prove this what we need to do is substitute the unfolded
-`Russell` for `x''`, from there it's immediate by assumption. We
-perform the substitution with `chyp-subst`. This takes a direction to
-substitute, the hypothesis to use, and another targeting telling us
+Now to prove this, what we need to do is substitute the unfolded
+`Russell` for `x''`; from there it's immediate by assumption. We
+perform the substitution with `chyp-subst`. This takes a direction in which to
+substitute, which hypothesis to use, and another targeting telling us
 where to apply the substitution.
 
 ``` jonprl
@@ -883,7 +887,7 @@ This leaves us with a much more tractable goal.
     4. russell-not-in-russell : not(member(Russell; Russell))
     ⊢ void
 
-We'd like to imply just apply `assumption` but it's not immediately
+We'd like to just apply `assumption` but it's not immediately
 applicable due to some technically details (basically we can only
 apply an assumption in a proof irrelevant context but we have to
 unfold `Russell` and introduce it to demonstrate that it's
@@ -987,7 +991,7 @@ Once we unfold that `Russell` we have an immediate contradiction so
     }
 ```
 
-This takes care of this subgoal so now we're back on the main
+This takes care of this subgoal, so now we're back on the main
 goal. This time though we have an extra hypothesis which will provide
 the leverage we need to prove our next assertion.
 
@@ -998,7 +1002,7 @@ the leverage we need to prove our next assertion.
     4. russell-not-in-russell : not(member(Russell; Russell))
     ⊢ void
 
-Now we're going to claim that `Russell` is in fact in `Russell`. This
+Now we're going to claim that `Russell` is in fact a member of `Russell`. This
 will follow from the fact that we've proved already that `Russell`
 isn't in `Russell` (yeah, it seems pretty paradoxical already).
 
@@ -1078,7 +1082,7 @@ assumption.
 This just leaves us with one awful well-formedness goal requiring us
 to prove that `not(=(x; x; x))` is a type if `x` is a type. We
 actually proved something similar back when we prove that `Russell`
-was well formed. The proof is the same as then, just unfold, `eq-cd`
+was well-formed. The proof is the same as then, just unfold, `eq-cd`
 and `impredicativity-wf-tac`. We use `?{!{auto}}` to only apply `auto`
 in a subgoal where it immediately proves it. Here `?{}` says "run this
 or do nothing" and `!{}` says "run this, if it succeeds stop, if it
@@ -1157,9 +1161,9 @@ at any point in the hierarchy of universes (the first of which is
 
 I hope you found this proof interesting. Even if you're not at all
 interested in JonPRL, it's nice to see that allowing one to have
-`U{i} : U{i}` or `* :: *` gives you the ability to have a type like
-`Russell` and with it, `void`. I also find it especially pleasing that
-we can prove something like this in JonPRL, it's growing up so fast.
+`U{i} ∈ U{i}` or `* :: *` gives you the ability to have a type like
+`Russell` and with it, inhabit `void`. I also find it especially pleasing that
+we can prove something like this in JonPRL; it's growing up so fast.
 
 *Thanks to Jon for greatly improving the original proof we had*
 
